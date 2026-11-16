@@ -140,7 +140,7 @@ function renderHome(){
       return `<a class="card lesson" href="?w=${w}">
         <div class="lnum">${w}</div>
         <div class="linfo"><div class="lt">Week ${w}${w === OPEN_WEEK ? ' · <b class="now">This week</b>' : ''}</div>
-          <div class="ln">${esc(L.code)} · ${esc(L.title)}</div><div class="ls">${esc(L.pages)}</div></div>
+          <div class="ln">${esc(L.code)} · ${esc(L.title)}</div></div>
         <div>${st}</div></a>`;
     }).join('')}
     ${next ? `<div class="card lesson locked"><div class="lnum">🔒</div><div class="linfo"><div class="lt">Week ${OPEN_WEEK + 1}</div><div class="ln">Coming next week</div></div></div>` : ''}`;
@@ -212,15 +212,15 @@ function renderT(t, keys, example){
 const keysOf = (e, it) => QS.filter(q => q.e === e && q.it.n === it.n).map(q => q.k);
 const fixBox = (e, it) => `<div class="fix" data-fix="${e.id}-${it.n}"></div>`;
 
+const exNo = e => LESSON.ex.indexOf(e) + 1;
 function exHead(e){
   const ws = [];
   JSON.stringify(e.examples || []).concat(JSON.stringify(e.items || [])).replace(/\(\(([^)]*)\)\)/g, (_, inner) => {
     inner.replace(/\{\{([^}|]+)/g, (__, k) => { if (VOCAB[k] && !ws.includes(k)) ws.push(k); });
   });
-  return `<div class="ex-head"><span class="badge">Exercise ${e.id}</span><h2>${e.title}</h2></div>
-    <div class="src">Book ${esc(e.page)}${e.track ? ' · 🎧 Track ' + e.track : ''}</div>
+  return `<div class="ex-head"><span class="badge">Exercise ${exNo(e)}</span><h2>${e.title}</h2></div>
     ${e.track ? `<div class="listen"><audio controls preload="none" src="audio/${e.track}.mp3"></audio></div>` : ''}
-    <p class="how">${vt(e.how)}</p>${e.vn ? `<p class="vn">👉 ${e.vn}</p>` : ''}
+    <p class="how">${unv(e.how)}</p>${e.vn ? `<p class="vn">👉 ${e.vn}</p>` : ''}
     ${ws.length ? `<div class="words"><span class="wl">📒 New words:</span> ${ws.map(w => vt(`{{${w}}}`)).join(' ')}</div>` : ''}`;
 }
 function exList(e){
@@ -255,7 +255,7 @@ function buildLesson(){
   $('#heroSub').textContent = `Week ${WEEK_NO} · ${LESSON.code}: ${LESSON.title}`;
   buildQS();
   const allWords = [];
-  [LESSON.ex.map(e => JSON.stringify(e)).join(' ')].join(' ').replace(/\{\{([^}|]+)/g, (_, k) => { if (VOCAB[k] && !allWords.includes(k)) allWords.push(k); });
+  LESSON.ex.map(e => JSON.stringify(Object.assign({}, e, { how: '' }))).join(' ').replace(/\{\{([^}|]+)/g, (_, k) => { if (VOCAB[k] && !allWords.includes(k)) allWords.push(k); });
   $('#app').innerHTML = `
     <section class="card start" id="start">
       <h2>👋 Hi! What’s your name?</h2>
@@ -482,7 +482,7 @@ function renderSummary(){
   if (S.phase === 'work'){ box.innerHTML = ''; return; }
   const secs = R => LESSON.ex.map(e => {
     const ks = QS.filter(q => q.e === e).map(q => q.k), sc = ks.filter(k => R.items[k].ok).length;
-    return `<span class="sec${sc === ks.length ? ' full' : ''}">Ex ${e.id}: ${sc}/${ks.length}</span>`;
+    return `<span class="sec${sc === ks.length ? ' full' : ''}">Ex ${exNo(e)}: ${sc}/${ks.length}</span>`;
   }).join('');
   if (S.phase === 'review' || S.phase === 'retry'){
     box.innerHTML = `<div class="card summary retry"><div class="score">${S.r1.score}<span>/${S.r1.total}</span></div>
@@ -550,12 +550,12 @@ const secsBetween = (a, b) => a && b ? Math.max(0, Math.round((new Date(b) - new
 const makeSid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
 const base = () => ({ app: 'btvn', unit: 'PET', title: `PET Grammar ${LESSON.code} – Week ${WEEK_NO}`, name: S.name, cls: S.cls, sid: S.sid || '' });
 function itemsOf(R){
-  return QS.map(q => ({ sec: q.e.id, n: q.label, q: qText(q), ans: R.items[q.k].ans, correct: correctText(q), ok: R.items[q.k].ok }));
+  return QS.map(q => ({ sec: String(exNo(q.e)), n: q.label, q: qText(q), ans: R.items[q.k].ans, correct: correctText(q), ok: R.items[q.k].ok }));
 }
 function sectionsOf(items){
   return LESSON.ex.map(e => {
-    const its = items.filter(x => x.sec === e.id);
-    return { id: e.id, title: `Exercise ${e.id} · ${plain(e.title)}`, score: its.filter(x => x.ok).length, total: its.length, pending: false };
+    const its = items.filter(x => x.sec === String(exNo(e)));
+    return { id: String(exNo(e)), title: `Exercise ${exNo(e)} · ${plain(e.title)}`, score: its.filter(x => x.ok).length, total: its.length, pending: false };
   });
 }
 function payload1(){

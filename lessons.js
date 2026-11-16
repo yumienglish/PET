@@ -19,15 +19,9 @@ const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyAom9bBpL0ms0VD7_bz
 
 /* ---------- TỪ MỚI: w = từ đọc to, ipa, vi = nghĩa tiếng Việt ---------- */
 const VOCAB = {
-  'underlined':    { w: 'underlined', ipa: '/ˌʌndəˈlaɪnd/', vi: 'được gạch chân' },
-  'countable':     { w: 'countable', ipa: '/ˈkaʊntəbl/', vi: 'đếm được' },
-  'uncountable':   { w: 'uncountable', ipa: '/ʌnˈkaʊntəbl/', vi: 'không đếm được' },
   'umbrella':      { w: 'umbrella', ipa: '/ʌmˈbrelə/', vi: 'cái ô, cái dù' },
   'mud':           { w: 'mud', ipa: '/mʌd/', vi: 'bùn' },
   'hopes':         { w: 'hopes', ipa: '/həʊps/', vi: 'những hy vọng, mong ước' },
-  'label':         { w: 'label', ipa: '/ˈleɪbl/', vi: 'ghi tên, dán nhãn' },
-  'plural':        { w: 'plural', ipa: '/ˈplʊərəl/', vi: 'số nhiều' },
-  'where necessary': { w: 'where necessary', ipa: '/weə ˈnesəsəri/', vi: 'khi cần thiết' },
   'furniture':     { w: 'furniture', ipa: '/ˈfɜːnɪtʃə/', vi: 'đồ đạc trong nhà (bàn, ghế, tủ…)' },
   'transport':     { w: 'transport', ipa: '/ˈtrænspɔːt/', vi: 'phương tiện giao thông' },
   'shelf':         { w: 'shelf', ipa: '/ʃelf/', vi: 'cái kệ, cái giá (số nhiều: shelves)' },
@@ -36,7 +30,6 @@ const VOCAB = {
   'puddle':        { w: 'puddle', ipa: '/ˈpʌdl/', vi: 'vũng nước' },
   'raincoat':      { w: 'raincoat', ipa: '/ˈreɪnkəʊt/', vi: 'áo mưa' },
   'drop of rain':  { w: 'drop of rain', ipa: '/drɒp əv reɪn/', vi: 'giọt mưa' },
-  'option':        { w: 'option', ipa: '/ˈɒpʃn/', vi: 'lựa chọn, phương án' },
   'matches':       { w: 'matches', ipa: '/ˈmætʃɪz/', vi: 'que diêm' },
   'gold':          { w: 'gold', ipa: '/ɡəʊld/', vi: 'vàng (kim loại)' },
   'kindness':      { w: 'kindness', ipa: '/ˈkaɪndnəs/', vi: 'lòng tốt' },
@@ -57,7 +50,6 @@ const VOCAB = {
   'carton':        { w: 'carton', ipa: '/ˈkɑːtn/', vi: 'hộp giấy (đựng trứng, sữa)' },
   'wheel':         { w: 'wheel', ipa: '/wiːl/', vi: 'bánh xe' },
   'pollution':     { w: 'pollution', ipa: '/pəˈluːʃn/', vi: 'sự ô nhiễm' },
-  'conversations': { w: 'conversations', ipa: '/ˌkɒnvəˈseɪʃnz/', vi: 'những đoạn hội thoại' },
   'toast':         { w: 'toast', ipa: '/təʊst/', vi: 'bánh mì nướng' },
   'jam':           { w: 'jam', ipa: '/dʒæm/', vi: 'mứt' },
   'torch':         { w: 'torch', ipa: '/tɔːtʃ/', vi: 'đèn pin' },
@@ -68,7 +60,6 @@ const VOCAB = {
   'unfortunately': { w: 'unfortunately', ipa: '/ʌnˈfɔːtʃənətli/', vi: 'thật không may' },
   'bowls':         { w: 'bowls', ipa: '/bəʊlz/', vi: 'những cái bát, tô' },
   'style':         { w: 'style', ipa: '/staɪl/', vi: 'kiểu, phong cách' },
-  'article':       { w: 'article', ipa: '/ˈɑːtɪkl/', vi: 'mạo từ (a, an, the)' },
   'skiing':        { w: 'skiing', ipa: '/ˈskiːɪŋ/', vi: 'trượt tuyết' },
   'the Alps':      { w: 'the Alps', ipa: '/ði ælps/', vi: 'dãy núi An-pơ (châu Âu)' },
   'manager':       { w: 'manager', ipa: '/ˈmænɪdʒə/', vi: 'người quản lý' },
@@ -81,52 +72,37 @@ const VOCAB = {
 const LESSONS = {
   1: {
     code: 'Unit 1', title: 'Countable and uncountable nouns; articles', pages: 'Student’s Book p.6–9',
-    // Ô Grammar thu gọn ở đầu bài (tóm tắt khung lý thuyết sách tr.6 và tr.8)
+    // Ô Grammar: tóm tắt thật ngắn, ví dụ KHÔNG trùng với câu trong bài tập
     grammar: `
-      <h4>1. Countable (C) – Uncountable (U)</h4>
-      <p><b>Danh từ đếm được (C)</b> đếm được 1, 2, 3…, có số ít và số nhiều:
-        <i>a friend → two friends, a class → classes, a family → families</i>.<br>
-        Số nhiều đặc biệt: <i>man → men, woman → women, child → children, person → people, foot → feet, tooth → teeth, mouse → mice, sheep → sheep</i>.</p>
-      <p><b>Danh từ không đếm được (U)</b>: chất lỏng, thức ăn, chất liệu, ý niệm, cảm xúc…
-        <i>water, milk, rice, sugar, cheese, glass, gold, mud, information, advice, news, furniture, traffic, kindness, happiness</i>.<br>
-        👉 <b>Không</b> có số nhiều, <b>không</b> dùng <i>a/an</i>, động từ chia <b>số ít</b>: <i>The news <b>is</b> good.</i></p>
-      <p>Muốn đếm danh từ U → dùng <b>lượng + of</b>: <i>a drop of water, a slice of cheese, a block of ice, a jar of jam, a piece of information, a kilo of rice</i>.</p>
-      <p>Một số từ vừa C vừa U, <b>khác nghĩa</b>:
-        <i>glass</i> (thủy tinh, U) / <i>a glass</i> (cái cốc, C) ·
-        <i>time</i> (thời gian, U) / <i>three times</i> (3 lần, C) ·
-        <i>newspaper</i> (giấy báo, U) / <i>a newspaper</i> (tờ báo, C) ·
-        <i>apple juice</i> (U) / <i>an apple juice</i> (= 1 ly nước táo, C).</p>
-
-      <h4>2. a / an / some / any</h4>
-      <table>
-        <tr><th>a / an + C số ít</th><th>some / any + C số nhiều</th><th>some / any + U</th></tr>
-        <tr><td>I’ll get <b>a</b> bowl of rice.<br>I’d like <b>an</b> orange.</td><td>I’ll get <b>some</b> bowls of rice.<br>There aren’t <b>any</b> trees.</td><td>I’ll get <b>some</b> rice.<br>Is there <b>any</b> space?</td></tr>
-      </table>
-      <p><b>a</b> + âm phụ âm (<i>a book, a uniform</i>) · <b>an</b> + âm nguyên âm (<i>an orange, an hour</i>).<br>
-        <b>some</b>: câu khẳng định và lời mời / nhờ lịch sự (<i>Would you like some crisps?</i>) · <b>any</b>: câu phủ định và câu hỏi.</p>
-
-      <h4>3. the</h4>
-      <p>Dùng <b>the</b> khi người nghe <b>biết rõ là cái nào</b>:</p>
+      <h4>1. Đếm được (C) – Không đếm được (U)</h4>
       <ul>
-        <li>đã nhắc đến trước đó: <i>We saw some green birds. <b>The</b> green birds were beautiful.</i></li>
-        <li>có thông tin xác định phía sau: <i>I’d like <b>the</b> oranges that are in your bag.</i></li>
-        <li>chỉ có một (trên đời / ở nơi đó): <i><b>the</b> internet, <b>the</b> moon, <b>the</b> teacher</i></li>
-        <li>nhạc cụ: <i>play <b>the</b> piano</i></li>
-        <li>sông, biển, đại dương, dãy núi, sa mạc, nhóm đảo / nước: <i><b>the</b> Amazon, <b>the</b> Pacific, <b>the</b> Andes, <b>the</b> Sahara, <b>the</b> Canaries, <b>the</b> USA, <b>the</b> UK</i></li>
+        <li><b>C</b>: đếm được 1, 2, 3… → có số nhiều: <i>a cat → two cats, a child → two children</i>.</li>
+        <li><b>U</b>: chất lỏng, đồ ăn dạng hạt / bột, chất liệu, ý tưởng, cảm xúc: <i>coffee, rice, salt, advice, happiness</i>.<br>
+          → <b>không</b> có số nhiều, <b>không</b> dùng a/an, động từ chia <b>số ít</b>: <i>Your advice <b>is</b> great.</i></li>
+        <li>Muốn đếm U → thêm từ chỉ lượng + <b>of</b>: <i>a cup <b>of</b> tea, a kilo <b>of</b> rice</i>.</li>
+        <li>Có từ vừa C vừa U, <b>nghĩa khác nhau</b>: <i>chicken</i> (thịt gà, U) / <i>a chicken</i> (con gà, C).</li>
       </ul>
-
+      <h4>2. a / an / some / any</h4>
+      <ul>
+        <li><b>a / an</b> + C số ít. <b>an</b> đứng trước <b>âm</b> nguyên âm: <i>a dog, an ant, an hour</i>.</li>
+        <li><b>some / any</b> + C số nhiều hoặc U. <b>some</b>: câu khẳng định, lời mời / nhờ lịch sự. <b>any</b>: câu phủ định, câu hỏi.<br>
+          <i>I’ve got <b>some</b> pencils. There isn’t <b>any</b> salt. Would you like <b>some</b> tea?</i></li>
+      </ul>
+      <h4>3. the: người nghe biết rõ là cái nào</h4>
+      <ul>
+        <li>đã nhắc đến rồi: <i>I’ve got a dog. <b>The</b> dog is black.</i> · có thông tin chỉ rõ phía sau: <i><b>the</b> book on my desk</i></li>
+        <li>chỉ có một: <i><b>the</b> sun</i> · nhạc cụ: <i>play <b>the</b> guitar</i> · sông, đại dương, dãy núi: <i><b>the</b> Nile, <b>the</b> Atlantic, <b>the</b> Himalayas</i></li>
+      </ul>
       <h4>4. Không dùng mạo từ (–)</h4>
       <ul>
-        <li>nói <b>chung chung</b> với danh từ số nhiều hoặc U: <i>He likes books and films. Bread is made of flour.</i></li>
-        <li>màu sắc, môn thể thao, hoạt động, bữa ăn: <i>I don’t like yellow. Let’s have breakfast.</i></li>
-        <li>tên nước, núi, hồ, 1 hòn đảo, châu lục: <i>Canada, Mount Fuji, Lake Geneva, Asia</i></li>
-        <li>nơi chốn khi nói về <b>chức năng</b>: <i>Ted’s at school. My brother’s in hospital.</i></li>
+        <li>nói <b>chung chung</b>: <i>Cats are cute. Coffee is hot.</i></li>
+        <li>màu sắc, môn thể thao, bữa ăn, tên nước: <i>Red is nice. I play football. We have dinner at 7. I live in Vietnam.</i></li>
       </ul>`,
     ex: [
       /* Exercise 1 – C hay U */
       { id: '1', type: 'list', page: 'p.7',
         title: 'Countable or uncountable?',
-        how: 'Are the {{underlined}} nouns {{countable}} (C) or {{uncountable}} (U)? Tap C or U.',
+        how: 'Are the underlined nouns countable (C) or uncountable (U)? Tap C or U.',
         vn: 'Nhìn danh từ <u>gạch chân</u>: đếm được thì chọn <b>C</b>, không đếm được thì chọn <b>U</b>.',
         examples: [
           'I’ve got a good <u>idea</u>! ((*C/U))',
@@ -135,7 +111,7 @@ const LESSONS = {
         items: [
           { t: 'Have you got an <u>{{umbrella}}</u>? ((*C/U))', h: 'Có “an” đứng trước. a/an chỉ đi với loại danh từ nào?' },
           { t: 'Where are the <u>keys</u>? ((*C/U))', h: 'Từ này có đuôi -s và đi với “are”. Danh từ không đếm được có số nhiều không?' },
-          { t: 'It takes <u>time</u> to learn a language. ((C/*U))', h: 'Ở đây “time” = thời gian nói chung, không phải “lần”. Xem lại ô Grammar: time có 2 nghĩa.' },
+          { t: 'It takes <u>time</u> to learn a language. ((C/*U))', h: 'Ở đây “time” = thời gian nói chung (không phải “lần”). Thời gian có đếm 1, 2, 3 được không?' },
           { t: 'We need 300 grams of <u>sugar</u>. ((C/*U))', h: 'Ta phải đếm bằng “grams of…”, không nói “two sugars”. Thức ăn dạng hạt, bột thuộc loại nào?' },
           { t: 'Is it made of <u>glass</u>? ((C/*U))', h: '“made of” = làm bằng chất liệu gì. Chất liệu (thủy tinh) thuộc loại nào?' },
           { t: 'He’s phoned them six <u>times</u>. ((*C/U))', h: '“six times” = 6 lần. Đếm 1 lần, 2 lần… được không?' },
@@ -148,7 +124,7 @@ const LESSONS = {
       /* Exercise 2 – ghi tên tranh */
       { id: '2', type: 'label', page: 'p.7',
         title: 'Label the pictures',
-        how: '{{label|Label}} the pictures with the words in the box. Use <b>a</b>, <b>an</b> or a number with the {{countable}} nouns. Use a {{plural}} form {{where necessary}}. Numbers 1–4 are topics.',
+        how: 'Label the pictures with the words in the box. Use <b>a</b>, <b>an</b> or a number with the countable nouns. Use a plural form where necessary. Numbers 1–4 are topics.',
         vn: 'Mỗi tranh có 1 <b>chủ đề</b> (dòng số 1, 2, 3, 4) và 4 đồ vật <b>a, b, c, d</b>. Danh từ đếm được phải có <b>a / an</b> hoặc <b>số đếm</b> phía trước. Có 2 cái trở lên thì đếm rồi viết số nhiều, VD: <b>two chairs</b>. Từ gạch ngang trong khung là đã dùng ở ví dụ.',
         box: ['bus', 'car', '~chair', 'boy', '{{drop of rain}}', '~furniture', 'people', '{{lorry}}', 'man', '{{motorbike}}',
           '{{puddle}}', 'girl', 'weather', '{{raincoat}}', 'sofa', '{{shelf}}', '~table', '{{transport}}', '{{umbrella}}', 'woman'],
@@ -170,7 +146,7 @@ const LESSONS = {
       /* Exercise 4 – chọn đáp án đúng (KHÔNG nghe để kiểm tra) */
       { id: '4', type: 'list', page: 'p.7',
         title: 'Choose the correct word',
-        how: 'Tap the correct {{option}}.',
+        how: 'Tap the correct option.',
         vn: 'Mỗi câu chạm vào <b>1</b> từ đúng.',
         examples: [ 'There were ten ((mouses/*mice)).' ],
         items: [
@@ -220,7 +196,7 @@ const LESSONS = {
       /* Exercise 9 – hội thoại: a, an, the, any, some (KHÔNG nghe để kiểm tra) */
       { id: '9', type: 'list', page: 'p.9', conv: true, only: ['a', 'an', 'the', 'any', 'some'],
         title: 'Complete the conversations',
-        how: 'Complete the {{conversations}} with <b>a</b>, <b>an</b>, <b>the</b>, <b>any</b> or <b>some</b>.',
+        how: 'Complete the conversations with <b>a</b>, <b>an</b>, <b>the</b>, <b>any</b> or <b>some</b>.',
         vn: 'Gõ 1 từ vào mỗi ô: <b>a, an, the, any</b> hoặc <b>some</b>. Gõ xong bấm <b>Enter</b> để nhảy sang ô tiếp theo. Mở ô 📘 Grammar ở đầu bài nếu chưa chắc.',
         examples: [ '‘I bought [[some]] magazines for you.’<br>‘Thanks. Where are they?’<br>‘In [[the]] living room.’' ],
         items: [
@@ -241,7 +217,7 @@ const LESSONS = {
       /* Exercise 10 – the hay không mạo từ */
       { id: '10', type: 'list', page: 'p.9',
         title: '<i>the</i> or – (no article)?',
-        how: 'Complete the sentences with <b>the</b> or <b>–</b> (no {{article}}).',
+        how: 'Complete the sentences with <b>the</b> or <b>–</b> (no article).',
         vn: 'Chạm <b>the</b> nếu cần “the”, chạm <b>–</b> nếu <b>không</b> cần mạo từ.',
         examples: [ 'They’re {{skiing}} in ((*the/–)) Alps.' ],
         items: [
