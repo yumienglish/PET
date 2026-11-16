@@ -236,7 +236,7 @@ function exPics(e){
 }
 function exLabel(e){
   const its = itemsOfEx(e);
-  return `<div class="wordbox">${e.box.map(w => w.startsWith('~') ? `<s>${esc(w.slice(1))}</s>` : `<span>${vt(w)}</span>`).join('')}</div>
+  return `<div class="wordbox">${e.box.map(w => w.startsWith('~') ? `<s>${vt(w.slice(1))}</s>` : `<span>${vt(w)}</span>`).join('')}</div>
     <div class="lgroups">${e.groups.map(g => {
       const head = its.find(it => it.grp === g.n && it.head);
       return `<div class="lg" data-grp="${e.id}-${g.n}"><img src="img/${g.img}" alt="Picture ${g.n}" loading="lazy">
