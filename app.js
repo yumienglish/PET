@@ -119,7 +119,9 @@ const NOUN_HINT = {
 
 /* ============ ĐIỀU HƯỚNG ============ */
 const WEEK_NO = parseInt(new URLSearchParams(location.search).get('w'), 10);
-const LESSON = WEEK_NO && WEEK_NO <= OPEN_WEEK ? LESSONS[WEEK_NO] : null;
+// ?w=2&preview: cô xem trước bài chưa mở (học sinh không thấy link này trên trang chủ)
+const PREVIEW = new URLSearchParams(location.search).has('preview');
+const LESSON = WEEK_NO && (WEEK_NO <= OPEN_WEEK || PREVIEW) ? LESSONS[WEEK_NO] : null;
 const ME_KEY = 'pet-me';
 const storeKey = w => 'pet-w' + w;
 
@@ -189,6 +191,8 @@ function renderHome(){
 // Mỗi chỗ trống = 1 câu chấm điểm. k = "<bài>-<câu><a,b…>"
 let QS = [];
 function itemsOfEx(e){
+  if (e.type === 'speak') return [];
+  if (e.type === 'text') return e.paras.map((p, j) => Object.assign({ n: 'p' + (j + 1) }, p));
   if (e.type !== 'label') return e.items.map((it, j) => Object.assign({ n: String(j + 1) }, it));
   const out = [];
   e.groups.forEach(g => {
@@ -199,14 +203,14 @@ function itemsOfEx(e){
 }
 function buildQS(){
   QS = [];
-  LESSON.ex.forEach(e => itemsOfEx(e).forEach(it => {
+  LESSON.ex.forEach(e => { let c = 0; itemsOfEx(e).forEach(it => {
     const ts = toks(it.t);
-    ts.forEach((tok, ti) => QS.push({
-      k: e.id + '-' + it.n + (ts.length > 1 ? 'abcdefgh'[ti] : ''), e, it, ti, tok,
-      label: it.n + (ts.length > 1 ? 'abcdefgh'[ti] : ''),
-      h: Array.isArray(it.h) ? it.h[ti] : it.h,
-    }));
-  }));
+    ts.forEach((tok, ti) => {
+      // bài đoạn văn: đánh số chỗ trống liên tục 1, 2, 3…
+      const label = e.type === 'text' ? String(++c) : it.n + (ts.length > 1 ? 'abcdefgh'[ti] : '');
+      QS.push({ k: e.id + '-' + label, e, it, ti, tok, label, h: Array.isArray(it.h) ? it.h[ti] : it.h });
+    });
+  }); });
 }
 const qOf = k => QS.find(q => q.k === k);
 const tokText = tok => tok.kind === 'ch' ? tok.correct.map(i => tok.opts[i]).join(' + ')
@@ -223,15 +227,142 @@ function qText(q){
     return tk.kind === 'ch' ? '[' + tk.opts.map(unv).join(' / ') + ']' : '___';
   }));
   pick = marked.find(l => /___|\[/.test(l)) || marked.join(' ');
+  // đoạn văn dài: chỉ lấy câu có chỗ trống
+  if (e.type === 'text'){ const ss = plain(pick).split(/(?<=[.!?:])\s+/); pick = ss.find(x => /___/.test(x)) || pick; }
   const pre = e.type === 'label' ? `Picture ${q.it.grp}${q.it.head ? ' – topic' : ' – ' + q.it.n.slice(-1)}: ` : e.type === 'pics' ? 'Picture: ' : '';
-  return pre + plain(pick);
+  return pre + plain(pick) + (q.it.v ? ' (' + plain(q.it.v) + ')' : '');
 }
 
 /* ============ TRẠNG THÁI BÀI ============ */
 let S = null;
 // phase: work → (Submit) review: xem đúng/sai, khoá hết → (Làm lại câu sai) retry: chỉ hiện câu sai + gợi ý → (Nộp lần 2) done
-const blank = () => ({ name: '', cls: '', startedAt: null, leaves: 0, a: {}, phase: 'work', r1: null, r2: null, sid: '', sent1: false, sent2: false, retryAt: null });
+const blank = () => ({ name: '', cls: '', startedAt: null, leaves: 0, a: {}, tick: {}, rec: {}, phase: 'work', r1: null, r2: null, sid: '', sent1: false, sent2: false, retryAt: null });
 const save = () => lsSet(storeKey(WEEK_NO), S);
+
+/* ============ GHI ÂM (giống KET; lưu IndexedDB để không mất khi đóng trang) ============ */
+// RECS = các ô ghi âm của bài: đọc to (1 file/bài) và bài nói (1 file/câu)
+let RECS = [];
+function buildRecs(){
+  RECS = [];
+  LESSON.ex.forEach(e => {
+    if (e.readAloud) RECS.push({ qk: e.id + '-ra', e, kind: 'ra', max: 150, code: 'Ex' + exNo(e), label: `Exercise ${exNo(e)} – Read aloud` });
+    if (e.type === 'speak') e.prompts.forEach((p, j) => RECS.push({ qk: e.id + '-' + (j + 1), e, j, kind: 'sp', max: 60,
+      code: 'Ex' + exNo(e) + '-' + (j + 1), label: `Exercise ${exNo(e)} – ${j + 1}. ${plain(p.lead)}` }));
+  });
+}
+const fmtSec = s => { s = Math.max(0, Math.round(s || 0)); return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); };
+let IDBP = null;
+function idb(){
+  if (!IDBP) IDBP = new Promise((res, rej) => {
+    if (!window.indexedDB) return rej(new Error('no indexedDB'));
+    const r = indexedDB.open('pet-adventure', 1);
+    r.onupgradeneeded = () => r.result.createObjectStore('rec');
+    r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error);
+  });
+  return IDBP;
+}
+const within = (p, ms = 4000) => Promise.race([p, new Promise((_, rej) => setTimeout(() => rej(new Error('timeout')), ms))]);
+async function idbPut(k, v){ const d = await idb(); return new Promise((res, rej) => { const t = d.transaction('rec', 'readwrite'); t.objectStore('rec').put(v, k); t.oncomplete = () => res(); t.onerror = () => rej(t.error); }); }
+async function idbGet(k){ const d = await idb(); return new Promise((res, rej) => { const q = d.transaction('rec').objectStore('rec').get(k); q.onsuccess = () => res(q.result || null); q.onerror = () => rej(q.error); }); }
+const RECBLOB = {};
+const recId = qk => 'w' + WEEK_NO + '-' + qk;
+async function storeRec(qk, blob){ RECBLOB[qk] = blob; try { await within(blob.arrayBuffer().then(buf => idbPut(recId(qk), { buf, type: blob.type }))); } catch (e) {} }
+async function loadRec(qk){
+  if (RECBLOB[qk]) return RECBLOB[qk];
+  try { const v = await within(idbGet(recId(qk))); if (v && v.buf) return (RECBLOB[qk] = new Blob([v.buf], { type: v.type || 'audio/webm' })); } catch (e) {}
+  return null;
+}
+const extOf = t => /mp4|aac|m4a/.test(t) ? 'm4a' : /ogg/.test(t) ? 'ogg' : /wav/.test(t) ? 'wav' : 'webm';
+function pickMime(){
+  const c = ['audio/webm;codecs=opus', 'audio/webm', 'audio/mp4', 'audio/ogg;codecs=opus', 'audio/ogg'];
+  if (!window.MediaRecorder || !MediaRecorder.isTypeSupported) return '';
+  return c.find(m => MediaRecorder.isTypeSupported(m)) || '';
+}
+function stopAllAudio(){ $$('audio').forEach(a => { try { a.pause(); } catch (e) {} }); try { speechSynthesis.cancel(); } catch (e) {} }
+document.addEventListener('play', ev => $$('audio').forEach(a => { if (a !== ev.target) a.pause(); }), true);
+let REC = null, recMsg = {};
+async function recStart(qk){
+  if (REC || S.phase !== 'work') return;
+  const sl = RECS.find(x => x.qk === qk); if (!sl) return;
+  stopAllAudio(); recMsg[qk] = '';
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia || !window.MediaRecorder){
+    recMsg[qk] = 'Trình duyệt này không ghi âm được. Hãy mở trang bằng Chrome (Android, máy tính) hoặc Safari (iPhone, iPad).'; paintRec(); return;
+  }
+  let stream;
+  muteAway = true; // hộp xin quyền micro không tính là rời trang
+  try { stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true } }); }
+  catch (e){
+    releaseAway();
+    const denied = e && (e.name === 'NotAllowedError' || e.name === 'SecurityError');
+    recMsg[qk] = denied ? 'Micro đang bị chặn. Bấm biểu tượng 🔒 cạnh địa chỉ trang, cho phép Micro rồi thử lại.' : 'Không tìm thấy micro. Kiểm tra micro hoặc tai nghe rồi thử lại.';
+    paintRec(); return;
+  }
+  releaseAway();
+  if (REC){ stream.getTracks().forEach(t => t.stop()); return; }
+  const mime = pickMime(); let mr;
+  try { mr = new MediaRecorder(stream, Object.assign({ audioBitsPerSecond: 48000 }, mime ? { mimeType: mime } : {})); } catch (e){ mr = new MediaRecorder(stream); }
+  const r = { qk, mr, stream, chunks: [], t0: Date.now(), max: sl.max };
+  REC = r;
+  mr.ondataavailable = e => { if (e.data && e.data.size) r.chunks.push(e.data); };
+  mr.onstop = () => recDone(r);
+  mr.start(1000);
+  r.timer = setInterval(() => {
+    const s = (Date.now() - r.t0) / 1000, tm = $('#rt-' + qk);
+    if (tm) tm.textContent = fmtSec(s);
+    if (s >= r.max) recStop();
+  }, 250);
+  paintRec();
+}
+function recStop(){ if (REC && REC.mr.state !== 'inactive') REC.mr.stop(); }
+async function recDone(r){
+  clearInterval(r.timer);
+  try { r.stream.getTracks().forEach(t => t.stop()); } catch (e) {}
+  if (REC === r) REC = null;
+  const type = r.mr.mimeType || (r.chunks[0] && r.chunks[0].type) || 'audio/webm';
+  const dur = Math.min(r.max, (Date.now() - r.t0) / 1000);
+  const blob = new Blob(r.chunks, { type });
+  if (blob.size < 500 || dur < 1){ recMsg[r.qk] = 'Bản ghi ngắn quá. Em ghi lại nhé.'; paintRec(); return; }
+  S.rec[r.qk] = { mime: type.split(';')[0], ext: extOf(type), dur: Math.round(dur), size: blob.size, at: Date.now() };
+  save();
+  await storeRec(r.qk, blob);
+  paintRec(); progress();
+}
+function paintRec(){
+  RECS.forEach(sl => {
+    const box = $('#sq-' + sl.qk); if (!box) return;
+    const r = S.rec[sl.qk], recording = REC && REC.qk === sl.qk, lock = S.phase !== 'work';
+    box.className = 'sq' + (r ? ' done' : '') + (recording ? ' live' : '');
+    box.innerHTML = `<div class="sqr">
+        ${recording ? `<span class="dot"></span><b id="rt-${sl.qk}">0:00</b><span class="muted small">/ ${fmtSec(sl.max)}</span><button type="button" class="btn sm red" data-stop="1">⏹ Stop</button>`
+          : lock ? '' : `<button type="button" class="btn sm ${r ? 'ghost' : 'orange'}" data-rec="${sl.qk}" ${REC ? 'disabled' : ''}>🎙 ${r ? 'Record again' : 'Record'}</button>`}
+        ${r && !recording ? `<audio controls preload="none" id="pb-${sl.qk}"></audio>` : ''}
+        <span class="sqs-st">${r && !recording ? '✅ ' + fmtSec(r.dur) : recording ? '' : '<span class="muted small">🎙 not recorded yet</span>'}</span>
+      </div>${recMsg[sl.qk] ? `<div class="err">${esc(recMsg[sl.qk])}</div>` : ''}`;
+    if (r && !recording) loadRec(sl.qk).then(b => {
+      const a = $('#pb-' + sl.qk);
+      if (a && b){ a.src = URL.createObjectURL(b); }
+      else if (a && !b){ a.replaceWith(Object.assign(document.createElement('span'), { className: 'err', textContent: '⚠️ Máy không còn bản ghi này, em ghi lại nhé.' })); if (S.phase === 'work'){ delete S.rec[sl.qk]; save(); progress(); } }
+    });
+  });
+}
+// Đọc to: hiện lại các câu với đáp án em đã điền
+function raSentence(e, it){
+  const keys = keysOf(e, it), parts = []; let i = 0;
+  const s = plain(String(it.t).replace(TOK, () => { parts.push(keys[i++]); return '\u0001' + (parts.length - 1) + '\u0001'; }));
+  return esc(s).replace(/\u0001(\d+)\u0001/g, (_, n) => { const a = ansText(qOf(parts[n])); return `<b class="raa">${a ? esc(a) : '___'}</b>`; });
+}
+function paintRA(){
+  LESSON.ex.filter(e => e.readAloud).forEach(e => {
+    const ol = $('#ral-' + e.id); if (!ol) return;
+    ol.innerHTML = itemsOfEx(e).map(it => `<li>${raSentence(e, it)}</li>`).join('');
+  });
+}
+function paintTicks(){
+  $$('.tk').forEach(t => {
+    const v = S.tick[t.dataset.tk];
+    $$('.tkb', t).forEach(b => { b.classList.toggle('on', b.dataset.v === v); b.disabled = S.phase !== 'work'; });
+  });
+}
 
 /* ============ DỰNG BÀI ============ */
 const exVocab = {}; // từ mới nằm trong các lựa chọn (không bấm được trong nút) → hiện thành dòng riêng
@@ -245,7 +376,11 @@ function renderT(t, keys, example){
         `<button type="button" class="opt${example && tok.correct.includes(oi) ? ' on' : ''}" data-i="${oi}"${example ? ' disabled' : ''}>${esc(unv(o))}</button>`).join('<span class="sl">/</span>')}</span>`;
     }
     if (example) return `<span class="exv">${esc(tok.kind === 'gap' ? tok.alts[0] : tok.sg)}</span>`;
-    return `<span class="gw"><input class="txt ${tok.kind === 'noun' ? 'noun' : 'gap'}" data-k="${k}" ${ia} aria-label="Answer ${esc(k)}"></span>`;
+    const q = qOf(k), num = q && q.e.type === 'text' ? `<sup class="bnum">${q.label}</sup>` : '';
+    // ô trống giãn theo đáp án dài nhất (không để chữ bị che)
+    const w = tok.kind === 'gap' ? Math.max(...tok.alts.map(a => a.length)) : 0;
+    const st = w > 7 ? ` style="width:${Math.min(13, w * .62 + 2).toFixed(1)}em"` : '';
+    return `${num}<span class="gw"><input class="txt ${tok.kind === 'noun' ? 'noun' : 'gap'}" data-k="${k}" ${ia}${st} aria-label="Answer ${esc(k)}"></span>`;
   });
 }
 const keysOf = (e, it) => QS.filter(q => q.e === e && q.it.n === it.n).map(q => q.k);
@@ -260,12 +395,27 @@ function exHead(e){
   return `<div class="ex-head"><span class="badge">Exercise ${exNo(e)}</span><h2>${e.title}</h2></div>
     ${e.track ? `<div class="listen"><audio controls preload="none" src="audio/${e.track}.mp3"></audio></div>` : ''}
     <p class="how">${unv(e.how)}</p>
-    ${ws.length ? `<div class="words"><span class="wl">📒 New words:</span> ${ws.map(w => vt(`{{${w}}}`)).join(' ')}</div>` : ''}`;
+    ${ws.length ? `<div class="words"><span class="wl">📒 New words:</span> ${ws.map(w => vt(`{{${w}}}`)).join(' ')}</div>` : ''}
+    ${e.box && e.type !== 'label' ? `<div class="wordbox">${e.box.map(w => `<span>${vt(w)}</span>`).join('')}</div>` : ''}
+    ${e.img ? `<img class="eximg" src="img/${e.img}" alt="" loading="lazy">` : ''}`;
 }
+// nút ✓/✗ (ý kiến riêng, không chấm điểm)
+const tickBtns = k => `<span class="tk" data-tk="${k}"><button type="button" class="tkb" data-v="y" aria-label="Important">✓</button><button type="button" class="tkb" data-v="n" aria-label="Not important">✗</button></span>`;
 function exList(e){
-  const ex = (e.examples || []).map(t => `<div class="it example${e.conv ? ' conv' : ''}"><span class="cn">▶</span><div class="itb">${renderT(t, null, true)}</div></div>`).join('');
+  const ex = (e.examples || []).map((t, j) => `<div class="it example${e.conv ? ' conv' : ''}"><span class="cn">▶</span><div class="itb">${renderT(t, null, true)}${e.tick ? tickBtns(e.id + '-ex' + (j || '')) : ''}</div></div>`).join('');
   return `<div class="items">${ex}${itemsOfEx(e).map(it => `<div class="it${e.conv ? ' conv' : ''}" data-item="${e.id}-${it.n}">
-      <span class="cn">${it.n}</span><div class="itb">${renderT(it.t, keysOf(e, it))}${fixBox(e, it)}</div></div>`).join('')}</div>`;
+      <span class="cn">${it.n}</span><div class="itb">${renderT(it.t, keysOf(e, it))}${it.v ? ` <span class="vb">(${vt(it.v)})</span>` : ''}${e.tick ? tickBtns(e.id + '-' + it.n) : ''}${fixBox(e, it)}</div></div>`).join('')}</div>
+    ${e.readAloud ? `<div class="recbox"><h3>🎙 Read aloud</h3><p class="how">Now read your sentences aloud and record yourself.</p>
+      <ol class="ralist" id="ral-${e.id}"></ol><div class="sq" id="sq-${e.id}-ra"></div></div>` : ''}`;
+}
+// đoạn văn có chỗ trống đánh số
+function exText(e){
+  return `<div class="ptext">${itemsOfEx(e).map(it => `<p class="para" data-item="${e.id}-${it.n}">${renderT(it.t, keysOf(e, it))}</p>${fixBox(e, it)}`).join('')}</div>`;
+}
+// nói về bản thân: mỗi câu 1 ô ghi âm
+function exSpeak(e){
+  return `<div class="sqs">${e.prompts.map((p, j) => `<div class="spq"><div class="spl"><span class="cn">${j + 1}</span> <b>${vt(p.lead)}</b></div>
+      <div class="spm">💬 e.g. <i>${vt(p.ex)}</i></div><div class="sq" id="sq-${e.id}-${j + 1}"></div></div>`).join('')}</div>`;
 }
 function exPics(e){
   const card = (it, ex) => `<div class="pc${ex ? ' example' : ''}"${ex ? '' : ` data-item="${e.id}-${it.n}"`}>
@@ -292,7 +442,7 @@ function exLabel(e){
 function buildLesson(){
   document.title = 'PET ' + LESSON.code + ' · ' + LESSON.title;
   $('#heroSub').textContent = `Week ${WEEK_NO} · ${LESSON.code}: ${LESSON.title}`;
-  buildQS();
+  buildQS(); buildRecs();
   const allWords = (LESSON.newWords || []).filter(k => VOCAB[k]);
   $('#app').innerHTML = `
     <section class="card start" id="start">
@@ -314,7 +464,7 @@ function buildLesson(){
         ${LESSON.grammar ? `<details class="gram"><summary>📘 Grammar: ${esc(LESSON.title)}</summary><div class="gbody">${LESSON.grammar}</div></details>` : ''}
       </section>
       ${LESSON.ex.map(e => `<section class="card ex" id="ex${e.id}">${exHead(e)}${
-        e.type === 'label' ? exLabel(e) : e.type === 'pics' ? exPics(e) : exList(e)}</section>`).join('')}
+        e.type === 'label' ? exLabel(e) : e.type === 'pics' ? exPics(e) : e.type === 'text' ? exText(e) : e.type === 'speak' ? exSpeak(e) : exList(e)}</section>`).join('')}
     </div>`;
 
   // gõ chữ
@@ -334,6 +484,15 @@ function buildLesson(){
   });
   // chạm lựa chọn
   $('#app').addEventListener('click', ev => {
+    // ✓/✗ (không chấm điểm)
+    const tb = ev.target.closest('.tkb');
+    if (tb && !tb.disabled && S.phase === 'work'){
+      const k = tb.closest('.tk').dataset.tk;
+      S.tick[k] = S.tick[k] === tb.dataset.v ? undefined : tb.dataset.v; save(); paintTicks(); progress(); return;
+    }
+    // ghi âm
+    const rc = ev.target.closest('[data-rec]'); if (rc){ recStart(rc.dataset.rec); return; }
+    if (ev.target.closest('[data-stop]')){ recStop(); return; }
     const b = ev.target.closest('.ch[data-k] .opt'); if (!b || b.disabled) return;
     const k = b.closest('.ch').dataset.k, q = qOf(k), i = Number(b.dataset.i);
     if (!(S.phase === 'work' || (S.phase === 'retry' && !S.r1.items[k].ok))) return;
@@ -380,9 +539,12 @@ function progress(){
     $('#progF').style.width = (R.total ? R.score / R.total * 100 : 100) + '%';
     $('#submitBtn').hidden = true;
   } else if (S.phase === 'work'){
-    const d = QS.filter(answered).length;
-    $('#progT').textContent = `Done ${d}/${QS.length}`;
-    $('#progF').style.width = (QS.length ? d / QS.length * 100 : 0) + '%';
+    paintRA();
+    const ticks = $$('.tk').map(t => t.dataset.tk);
+    const all = QS.length + RECS.length + ticks.length;
+    const d = QS.filter(answered).length + RECS.filter(sl => S.rec[sl.qk]).length + ticks.filter(k => S.tick[k]).length;
+    $('#progT').textContent = `Done ${d}/${all}`;
+    $('#progF').style.width = (all ? d / all * 100 : 0) + '%';
     $('#submitBtn').textContent = 'Submit ✔'; $('#submitBtn').hidden = false;
   }
 }
@@ -496,13 +658,13 @@ function paintMarks(){
     wrongKeys().forEach(k => { const q = qOf(k), id = q.e.id + '-' + q.it.n; (by[id] = by[id] || []).push(q); });
     Object.entries(by).forEach(([id, qs]) => {
       const f = $(`[data-fix="${id}"]`); if (!f) return;
-      f.innerHTML = qs.map(q => `<div class="again">💡 ${qs.length > 1 || toks(q.it.t).length > 1 ? `<b>(${q.ti + 1})</b> ` : ''}${hintFor(q.k)}</div>`).join('');
+      f.innerHTML = qs.map(q => `<div class="again">💡 ${qs.length > 1 || toks(q.it.t).length > 1 ? `<b>(${q.e.type === 'text' ? q.label : q.ti + 1})</b> ` : ''}${hintFor(q.k)}</div>`).join('');
     });
   }
   // đánh số chỗ trống khi câu có nhiều chỗ và đang làm lại
   $$('.gw, .ch[data-k]').forEach(w => w.removeAttribute('data-n'));
   if (S.phase === 'retry') wrongKeys().forEach(k => {
-    const q = qOf(k); if (toks(q.it.t).length < 2) return;
+    const q = qOf(k); if (toks(q.it.t).length < 2 || q.e.type === 'text') return;
     const el = $(`input.txt[data-k="${k}"]`), w = el ? el.parentNode : $(`.ch[data-k="${k}"]`);
     if (w) w.setAttribute('data-n', q.ti + 1);
   });
@@ -543,12 +705,20 @@ function renderSummary(){
     ${R.score < R.total ? '<div class="big">Let’s review the answers below 👇</div>' : ''}</div></div>`;
   updateStatus();
 }
-function paintAll(){ paintMarks(); paintChoices(); focusWrong(S.phase === 'retry'); renderTop(); renderSummary(); renderWho(); progress(); }
+function paintAll(){ paintMarks(); paintChoices(); paintTicks(); paintRec(); paintRA(); focusWrong(S.phase === 'retry'); renderTop(); renderSummary(); renderWho(); progress(); }
 
 /* ============ NỘP BÀI ============ */
 async function onSubmit(){
+  if (REC){ alert('Em đang ghi âm. Bấm ⏹ Stop trước nhé.'); return; }
   if (S.phase === 'work'){
+    const noRec = RECS.filter(sl => !S.rec[sl.qk]);
+    if (noRec.length){
+      alert('Em chưa ghi âm: ' + noRec.map(sl => sl.label).join('; ') + '.\nPhải ghi âm đủ mới nộp được nhé.');
+      const box = $('#sq-' + noRec[0].qk); if (box) box.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      return;
+    }
     const left = QS.filter(q => !answered(q)).length;
+    stopAllAudio();
     muteAway = true;
     const go = confirm(left ? `Còn ${left} câu chưa làm. Nộp luôn?` : 'Nộp bài nhé?');
     releaseAway(); if (!go) return;
@@ -591,30 +761,57 @@ const secsBetween = (a, b) => a && b ? Math.max(0, Math.round((new Date(b) - new
 
 // Giống các trang BTVN khác: lần 1 gửi ngay; lần 2 gửi kèm kết quả lần 1 để mail so sánh 2 lần.
 const makeSid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
-const base = () => ({ app: 'btvn', unit: 'PET', title: `PET Grammar ${LESSON.code} – Week ${WEEK_NO}`, name: S.name, cls: S.cls, sid: S.sid || '' });
-function itemsOf(R){
-  return QS.map(q => ({ sec: String(exNo(q.e)), n: q.label, q: qText(q), ans: R.items[q.k].ans, correct: correctText(q), ok: R.items[q.k].ok }));
+const base = () => ({ app: 'btvn', unit: 'PET', title: `PET ${LESSON.code} ${LESSON.title} – Week ${WEEK_NO}`, name: S.name, cls: S.cls, sid: S.sid || '' });
+// withRec: mail lần 1 có thêm các dòng ghi âm (cô chấm, file đính kèm); mail lần 2 chỉ so sánh câu chấm điểm
+function itemsOf(R, withRec){
+  const out = [];
+  LESSON.ex.forEach(e => {
+    QS.filter(q => q.e === e).forEach(q => out.push({ sec: String(exNo(e)), n: q.label, q: qText(q), ans: R.items[q.k].ans, correct: correctText(q), ok: R.items[q.k].ok }));
+    if (withRec) RECS.filter(sl => sl.e === e).forEach(sl => {
+      const m = S.rec[sl.qk];
+      out.push({ sec: String(exNo(e)), n: sl.kind === 'ra' ? '🎙' : 'Q' + (sl.j + 1),
+        q: sl.kind === 'ra' ? 'Read aloud – đọc to các câu đã làm' : plain(e.prompts[sl.j].lead) + ' (nói về bản thân)',
+        ans: m ? '🎙 ' + fmtSec(m.dur) : '(chưa ghi âm)', correct: 'cô chấm', ok: null });
+    });
+  });
+  return out;
 }
-function sectionsOf(items){
-  return LESSON.ex.map(e => {
-    const its = items.filter(x => x.sec === String(exNo(e)));
-    return { id: String(exNo(e)), title: `Exercise ${exNo(e)} · ${plain(e.title)}`, score: its.filter(x => x.ok).length, total: its.length, pending: false };
+function sectionsOf(items, withRec){
+  return LESSON.ex.filter(e => withRec || e.type !== 'speak').map(e => {
+    const id = String(exNo(e)), its = items.filter(x => x.sec === id), graded = its.filter(x => x.ok !== null);
+    const nRec = withRec ? RECS.filter(sl => sl.e === e).length : 0;
+    return { id, title: `Exercise ${id} · ${plain(e.title)}${nRec ? ` (🎙 ${nRec} file ghi âm đính kèm)` : ''}`,
+      score: graded.filter(x => x.ok).length, total: graded.length, pending: e.type === 'speak' };
   });
 }
-function payload1(){
-  const items = itemsOf(S.r1);
+const blobToB64 = b => new Promise((res, rej) => { const fr = new FileReader(); fr.onload = () => res(String(fr.result).split(',')[1] || ''); fr.onerror = () => rej(fr.error); fr.readAsDataURL(b); });
+async function payload1(){
+  const items = itemsOf(S.r1, true), audios = [];
+  for (const sl of RECS){
+    const m = S.rec[sl.qk], blob = m ? await loadRec(sl.qk) : null;
+    if (blob) audios.push({ code: sl.code, label: sl.label, mime: m.mime, ext: m.ext, dur: m.dur, b64: await blobToB64(blob) });
+  }
+  // ✓/✗ (không chấm điểm): gửi kèm để cô xem
+  const extras = LESSON.ex.filter(e => e.tick).map(e => {
+    const rows = [];
+    (e.examples || []).forEach((t, j) => rows.push([e.id + '-ex' + (j || ''), t]));
+    itemsOfEx(e).forEach(it => rows.push([e.id + '-' + it.n, it.t]));
+    const filled = t => plain(String(t).replace(TOK, m0 => { const tk = parseTok([...m0.matchAll(TOK)][0]); return tk.kind === 'gap' ? tk.alts[0] : tk.kind === 'ch' ? tk.opts[tk.correct[0]] : tk.sg; }));
+    return { label: `Exercise ${exNo(e)} – ✓/✗ ${plain(e.title)}`,
+      text: rows.map(([k, t]) => (S.tick[k] === 'y' ? '✓ ' : S.tick[k] === 'n' ? '✗ ' : '– ') + filled(t)).join('\n') };
+  });
   return Object.assign(base(), {
     attempt: 1, canRetry: S.r1.score < S.r1.total,
     startedAt: S.startedAt, submittedAt: S.r1.at, timeTakenSec: secsBetween(S.startedAt, S.r1.at), leaves: S.r1.leaves,
-    score: S.r1.score, total: S.r1.total, sections: sectionsOf(items), items, wantsAudio: false, audio: null,
+    score: S.r1.score, total: S.r1.total, sections: sectionsOf(items, true), items, extras, audios, wantsAudio: RECS.length > 0, audio: null,
   });
 }
 function payload2(){
   const items = itemsOf(S.r2), first = itemsOf(S.r1);
   return Object.assign(base(), {
     attempt: 2, startedAt: S.retryAt || S.r1.at, submittedAt: S.r2.at, timeTakenSec: secsBetween(S.retryAt || S.r1.at, S.r2.at), leaves: Math.max(0, S.r2.leaves - S.r1.leaves),
-    score: S.r2.score, total: S.r2.total, sections: sectionsOf(items), items,
-    first: { score: S.r1.score, total: S.r1.total, sections: sectionsOf(first), items: first,
+    score: S.r2.score, total: S.r2.total, sections: sectionsOf(items, false), items,
+    first: { score: S.r1.score, total: S.r1.total, sections: sectionsOf(first, false), items: first,
       startedAt: S.startedAt, submittedAt: S.r1.at, timeTakenSec: secsBetween(S.startedAt, S.r1.at), leaves: S.r1.leaves },
   });
 }
@@ -629,7 +826,7 @@ async function send(){
   sending = true; sendState = 'sending'; sendErr = ''; updateStatus();
   try {
     for (;;){
-      if (!S.sent1){ await post(payload1()); S.sent1 = true; save(); continue; }
+      if (!S.sent1){ await post(await payload1()); S.sent1 = true; save(); continue; }
       if (S.r2 && !S.sent2){ await post(payload2()); S.sent2 = true; save(); continue; }
       break;
     }
@@ -642,7 +839,7 @@ async function send(){
 let away = false, muteAway = false;
 function releaseAway(){ setTimeout(() => { muteAway = false; away = false; }, 800); }
 const tracking = () => S && !!S.startedAt && (S.phase === 'work' || S.phase === 'retry') && $('#work') && !$('#work').hidden;
-function goAway(){ if (muteAway || away || !tracking()) return; away = true; S.leaves = (S.leaves || 0) + 1; save(); }
+function goAway(){ if (muteAway || away || REC || !tracking()) return; away = true; S.leaves = (S.leaves || 0) + 1; save(); }
 function comeBack(){ if (!document.hidden && document.hasFocus()) away = false; }
 document.addEventListener('visibilitychange', () => document.hidden ? goAway() : comeBack());
 window.addEventListener('blur', goAway);

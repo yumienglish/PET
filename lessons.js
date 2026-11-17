@@ -51,6 +51,51 @@ const VOCAB = {
   'unfortunately': { w: 'unfortunately', ipa: '/ʌnˈfɔːtʃənətli/', vi: 'thật không may' },
   'style':         { w: 'style', ipa: '/staɪl/', vi: 'kiểu, phong cách' },
   'skiing':        { w: 'skiing', ipa: '/ˈskiːɪŋ/', vi: 'trượt tuyết' },
+  /* Unit 8 */
+  'chess':         { w: 'chess', ipa: '/tʃes/', vi: 'cờ vua' },
+  'ski':           { w: 'ski', ipa: '/skiː/', vi: 'trượt tuyết' },
+  'skip':          { w: 'skip', ipa: '/skɪp/', vi: 'nhảy dây' },
+  'feel like':     { w: 'feel like', ipa: '/fiːl laɪk/', vi: 'muốn, thấy thích (làm gì)' },
+  'pastime':       { w: 'pastime', ipa: '/ˈpɑːstaɪm/', vi: 'trò tiêu khiển, thú vui' },
+  'shells':        { w: 'shells', ipa: '/ʃelz/', vi: 'vỏ sò, vỏ ốc' },
+  'gloves':        { w: 'gloves', ipa: '/ɡlʌvz/', vi: 'găng tay' },
+  'washing-up':    { w: 'washing-up', ipa: '/ˌwɒʃɪŋ ˈʌp/', vi: 'việc rửa bát đĩa' },
+  'worth':         { w: 'worth', ipa: '/wɜːθ/', vi: 'đáng (làm gì)' },
+  'possessions':   { w: 'possessions', ipa: '/pəˈzeʃnz/', vi: 'đồ đạc, của cải mình sở hữu' },
+  'own':           { w: 'own', ipa: '/əʊn/', vi: 'sở hữu, có' },
+  'promise':       { w: 'promise', ipa: '/ˈprɒmɪs/', vi: 'hứa' },
+  'borrow':        { w: 'borrow', ipa: '/ˈbɒrəʊ/', vi: 'mượn (của ai)' },
+  'in public':     { w: 'in public', ipa: '/ɪn ˈpʌblɪk/', vi: 'trước đám đông, nơi công cộng' },
+  'chopsticks':    { w: 'chopsticks', ipa: '/ˈtʃɒpstɪks/', vi: 'đôi đũa' },
+  'lie':           { w: 'lie', ipa: '/laɪ/', vi: 'nói dối' },
+  'refuse':        { w: 'refuse', ipa: '/rɪˈfjuːz/', vi: 'từ chối' },
+  'discuss':       { w: 'discuss', ipa: '/dɪˈskʌs/', vi: 'thảo luận, bàn bạc' },
+  'imagine':       { w: 'imagine', ipa: '/ɪˈmædʒɪn/', vi: 'tưởng tượng' },
+  'pretend':       { w: 'pretend', ipa: '/prɪˈtend/', vi: 'giả vờ' },
+  'practise':      { w: 'practise', ipa: '/ˈpræktɪs/', vi: 'luyện tập' },
+  'fancy':         { w: 'fancy', ipa: '/ˈfænsi/', vi: 'thích, muốn (làm gì)' },
+  'intend':        { w: 'intend', ipa: '/ɪnˈtend/', vi: 'dự định' },
+  "can't stand":   { w: "can't stand", ipa: '/kɑːnt stænd/', vi: 'không chịu nổi' },
+  'arrange':       { w: 'arrange', ipa: '/əˈreɪndʒ/', vi: 'sắp xếp, hẹn (làm gì)' },
+  'prefer':        { w: 'prefer', ipa: '/prɪˈfɜː/', vi: 'thích hơn' },
+  "don't mind":    { w: "don't mind", ipa: '/dəʊnt maɪnd/', vi: 'không ngại, không phiền' },
+  'deserve':       { w: 'deserve', ipa: '/dɪˈzɜːv/', vi: 'xứng đáng' },
+  'manage':        { w: 'manage', ipa: '/ˈmænɪdʒ/', vi: 'xoay xở được, làm được (việc khó)' },
+  'risk':          { w: 'risk', ipa: '/rɪsk/', vi: 'liều, mạo hiểm (làm gì)' },
+  'aim':           { w: 'aim', ipa: '/eɪm/', vi: 'đặt mục tiêu, nhắm tới' },
+  'fascinating':   { w: 'fascinating', ipa: '/ˈfæsɪneɪtɪŋ/', vi: 'cực kỳ hấp dẫn, lôi cuốn' },
+  'explore':       { w: 'explore', ipa: '/ɪkˈsplɔː/', vi: 'khám phá' },
+  'expect':        { w: 'expect', ipa: '/ɪkˈspekt/', vi: 'đoán trước, chờ đợi (điều gì sẽ xảy ra)' },
+  'stalls':        { w: 'stalls', ipa: '/stɔːlz/', vi: 'quầy hàng, sạp hàng' },
+  'workshops':     { w: 'workshops', ipa: '/ˈwɜːkʃɒps/', vi: 'xưởng thủ công' },
+  'ceramics':      { w: 'ceramics', ipa: '/səˈræmɪks/', vi: 'đồ gốm' },
+  'jewellery':     { w: 'jewellery', ipa: '/ˈdʒuːəlri/', vi: 'đồ trang sức' },
+  'underground':   { w: 'underground', ipa: '/ˈʌndəɡraʊnd/', vi: 'tàu điện ngầm' },
+  'sights':        { w: 'sights', ipa: '/saɪts/', vi: 'cảnh đẹp, điểm tham quan' },
+  'suggest':       { w: 'suggest', ipa: '/səˈdʒest/', vi: 'gợi ý, đề nghị' },
+  'get about':     { w: 'get about', ipa: '/ɡet əˈbaʊt/', vi: 'đi lại (trong thành phố)' },
+  'avoid':         { w: 'avoid', ipa: '/əˈvɔɪd/', vi: 'tránh' },
+  'identity card': { w: 'identity card', ipa: '/aɪˈdentəti kɑːd/', vi: 'thẻ căn cước' },
   'Mediterranean Sea': { w: 'Mediterranean Sea', ipa: '/ˌmedɪtəˈreɪniən siː/', vi: 'biển Địa Trung Hải' },
 };
 
@@ -212,6 +257,194 @@ const LESSONS = {
           { t: 'Look at ((*the/–)) moon!', h: 'Vật chỉ có một trên đời.' },
           { t: 'She comes from ((*the/–)) Philippines.', h: 'Tên nhóm đảo hoặc tên nước ở dạng số nhiều (giống the USA, the Canaries).' },
           { t: 'They had ((the/*–)) fun yesterday.', h: '“fun” không đếm được, nói chung chung.' },
+        ] },
+    ],
+  },
+
+  /* ===================== TUẦN 2 – Unit 8 ===================== */
+  2: {
+    code: 'Unit 8', title: 'The -ing form and the infinitive',
+    newWords: ['chess', 'ski', 'skip', 'feel like', 'pastime', 'shells', 'gloves', 'washing-up', 'worth', 'possessions', 'own',
+      'promise', 'borrow', 'in public', 'chopsticks', 'lie', 'refuse', 'discuss', 'imagine', 'pretend', 'practise', 'fancy', 'intend',
+      "can't stand", 'arrange', 'prefer', "don't mind", 'deserve', 'manage', 'risk', 'aim', 'fascinating', 'explore', 'expect',
+      'stalls', 'workshops', 'ceramics', 'jewellery', 'underground', 'sights', 'suggest', 'get about', 'avoid', 'identity card'],
+    // Ô Grammar: chỉ phần liên quan các bài được chọn, ví dụ KHÔNG trùng câu trong bài tập
+    grammar: `
+      <h4>1. V-ing</h4>
+      <ul>
+        <li>Làm <b>chủ ngữ</b> hoặc đứng sau <b>is</b>: <i><b>Dancing</b> is fun. My hobby is <b>drawing</b>.</i></li>
+        <li>Sau <b>giới từ</b> (at, in, for, of, about…): <i>She’s good at <b>singing</b>.</i></li>
+        <li><b>go</b> + V-ing (hoạt động, thể thao): <i>go fishing, go running</i></li>
+        <li>Sau các cụm: <i>spend time / be busy / feel like / be used to / it’s worth</i> + V-ing</li>
+        <li><b>see someone + V-ing</b>: thấy hành động <b>đang diễn ra</b> (chỉ thấy 1 phần).</li>
+      </ul>
+      <h4>2. V nguyên mẫu (không “to”)</h4>
+      <ul>
+        <li>Sau <b>can, could, must, should, will…</b>: <i>We should leave now.</i></li>
+        <li><b>make / let + someone + V</b>: <i>Mum made me tidy my room. Dad lets me use his phone.</i></li>
+        <li><b>see someone + V</b>: thấy <b>trọn</b> một hành động ngắn.</li>
+      </ul>
+      <h4>3. to + V</h4>
+      <ul>
+        <li>Chỉ <b>mục đích</b> (để làm gì): <i>I went to the shop <b>to buy</b> milk.</i></li>
+        <li>Sau <b>tính từ</b> (easy, difficult, nice, great, OK…), có thể thêm <b>for + someone</b>: <i>It was hard <b>for us to find</b> the hotel.</i></li>
+        <li><b>how / what / where + to V</b>: <i>She asked me where <b>to sit</b>.</i></li>
+      </ul>
+      <h4>4. Động từ + V-ing hay to + V?</h4>
+      <table>
+        <tr><th>+ V-ing</th><th>+ to V</th></tr>
+        <tr><td>enjoy, don’t mind, can’t stand, finish, imagine, fancy, practise, miss, risk, avoid, suggest</td>
+          <td>want, would like, would prefer, plan, hope, decide, arrange, promise, intend, expect, manage, need, refuse, deserve, pretend, aim, agree</td></tr>
+      </table>
+      <p>Dùng được cả hai, nghĩa như nhau: <b>start, like, love, hate</b>.</p>
+      <p>Dùng được cả hai nhưng <b>khác nghĩa</b>:</p>
+      <ul>
+        <li><b>stop</b> + V-ing = ngừng làm việc đó · <b>stop</b> + to V = dừng lại <b>để</b> làm việc khác</li>
+        <li><b>try</b> + to V = cố gắng làm · <b>try</b> + V-ing = làm thử xem có được không</li>
+        <li><b>remember</b> + to V = nhớ phải làm (việc chưa làm) · <b>remember</b> + V-ing = nhớ là đã làm</li>
+      </ul>`,
+    ex: [
+      /* Bài 1 (sách Ex 1) – nhìn tranh, điền V-ing */
+      { id: '1', type: 'list', img: 'u8-ex1.jpg',
+        title: 'What can you see?',
+        how: 'Complete the sentences with the -ing forms of the verbs below.',
+        box: ['{{chess|play chess}}', '{{ski}}', 'take photos', 'paint', 'swim', '{{skip}}'],
+        examples: [ 'I can see someone [[painting]].' ],
+        items: [
+          { t: 'I can see someone [[swimming]].', h: 'Động từ 1 âm tiết, tận cùng là <b>1 nguyên âm + 1 phụ âm</b> → gấp đôi phụ âm cuối rồi thêm -ing.' },
+          { t: 'I can see someone [[skiing]].', h: 'Động từ tận cùng bằng <b>-i</b> → giữ nguyên, chỉ thêm -ing.' },
+          { t: 'I can see someone [[skipping]].', h: 'Động từ 1 âm tiết, tận cùng là <b>1 nguyên âm + 1 phụ âm</b> → gấp đôi phụ âm cuối rồi thêm -ing.' },
+          { t: 'I can see someone [[taking photos|taking a photo|taking pictures|taking a picture]].', h: 'Viết cả cụm trong khung. Động từ tận cùng bằng <b>-e</b> → bỏ e rồi thêm -ing.' },
+          { t: 'I can see two people [[playing chess]].', h: 'Viết cả cụm trong khung (động từ + danh từ), động từ thêm -ing.' },
+        ] },
+
+      /* Bài 2 (sách Ex 4) – V-ing + đọc to */
+      { id: '4', type: 'list', readAloud: true,
+        title: 'Complete with the -ing form',
+        how: 'Complete the sentences with the -ing form of the verb in brackets.',
+        examples: [ 'I’m not used to [[getting]] up before six o’clock. <span class="vb">(get)</span>' ],
+        items: [
+          { t: 'I {{feel like}} [[going]] for a long walk.', v: 'go', h: '“feel like” (= muốn) + dạng nào? Xem mục 1 ô Grammar.' },
+          { t: 'They went [[camping]] last year.', v: 'camp', h: '<b>go</b> + hoạt động giải trí, thể thao.' },
+          { t: 'I spend a lot of time [[reading]].', v: 'read', h: '<b>spend time</b> + dạng nào?' },
+          { t: 'Her favourite {{pastime}} is [[collecting]] {{shells}} on the beach.', v: 'collect', h: 'Động từ đứng sau <b>is</b>, làm tên một hoạt động (như danh từ).' },
+          { t: 'Jason isn’t interested in [[watching]] films.', v: 'watch', h: 'Sau <b>giới từ</b> (in, at, for…) dùng dạng nào?' },
+          { t: 'I use these {{gloves}} for [[cycling]].', v: 'cycle', h: 'Sau <b>giới từ</b> “for”. Động từ tận cùng bằng <b>-e</b> → bỏ e rồi thêm -ing.' },
+          { t: 'Amy saw you [[working]] in the garden.', v: 'work', h: '<b>see someone</b> + hành động <b>đang diễn ra</b>.' },
+          { t: 'She was busy [[cooking]] all morning.', v: 'cook', h: '<b>be busy</b> + dạng nào?' },
+          { t: 'Can you start [[doing]] the {{washing-up}}?', v: 'do', h: 'Đề bài yêu cầu dạng <b>-ing</b>.' },
+          { t: 'It’s always {{worth}} [[asking]] a friend for advice.', v: 'ask', h: '<b>it’s worth</b> + dạng nào?' },
+        ] },
+
+      /* Bài 3 (sách Ex 6, đổi thành nói về bản thân + ghi âm) */
+      { id: '6', type: 'speak',
+        title: 'Talk about yourself',
+        how: 'Finish each sentence about <b>you</b>. Say two or three things that are true for you. Use the -ing form, like the example. Record your answer.',
+        prompts: [
+          { lead: 'I like …', ex: 'I like meeting my friends, listening to music and kicking a ball.' },
+          { lead: 'I’m not very good at …', ex: 'I’m not very good at singing, dancing or drawing.' },
+          { lead: 'I don’t like …', ex: 'I don’t like cleaning my room, waiting for the bus or eating vegetables.' },
+          { lead: 'I spend a lot of time …', ex: 'I spend a lot of time playing football and chatting with my friends.' },
+          { lead: 'I’ve never tried …', ex: 'I’ve never tried surfing or riding a horse.' },
+        ] },
+
+      /* Bài 4 (sách Ex 7) – V-ing + ✓/✗ (không chấm) */
+      { id: '7', type: 'list', tick: true,
+        title: 'What’s important to you?',
+        how: 'Complete the phrases with the -ing form of the verbs in the box. Then tap ✓ (important to you) or ✗ (not important).',
+        box: ['be', 'do', 'have', 'have', '{{own}}', 'spend'],
+        examples: [ '[[having]] lots of friends' ],
+        items: [
+          { t: '[[having]] one or two good friends', h: 'Động từ tận cùng bằng <b>-e</b> → bỏ e rồi thêm -ing.' },
+          { t: '[[being]] healthy', h: '“healthy” là tính từ. Động từ nào trong khung đi trước tính từ?' },
+          { t: '[[doing]] well at school', h: 'Cụm “___ well at school” = học tốt.' },
+          { t: '[[spending]] time with your family', h: 'Cụm “___ time with…” = dành thời gian cho…' },
+          { t: '[[owning]] lots of {{possessions}} (DVDs, clothes, a computer, etc.)', h: 'Có nhiều đồ đạc = <b>sở hữu</b> nhiều đồ đạc.' },
+        ] },
+
+      /* Bài 5 (sách Ex 10) – V hay to V + đọc to */
+      { id: '10', type: 'list', readAloud: true,
+        title: 'Choose the correct option',
+        how: 'Tap the correct option.',
+        examples: [ 'You must {{promise}} ((be/*to be)) careful.' ],
+        items: [
+          { t: 'It’s wonderful ((see/*to see)) you again.', h: 'Sau <b>tính từ</b> (wonderful, nice, easy…) dùng dạng nào? Xem mục 3 ô Grammar.' },
+          { t: 'The medicine will make you ((*feel/to feel)) better.', h: '<b>make + someone</b> + dạng nào? Xem mục 2.' },
+          { t: 'They’ve decided ((buy/*to buy)) a new one.', h: '“decide” là động từ về <b>kế hoạch</b>. Xem bảng ở mục 4.' },
+          { t: 'Are you OK? I saw you ((*fall/to fall)).', h: 'Thấy <b>trọn</b> một hành động ngắn: <b>see someone</b> + dạng nào?' },
+          { t: 'Jack let me ((*borrow/to borrow)) his coat.', h: '<b>let + someone</b> + dạng nào? Xem mục 2.' },
+          { t: 'We could ((*phone/to phone)) Milly.', h: 'Sau <b>could</b> (động từ khuyết thiếu) dùng dạng nào?' },
+          { t: 'I did it ((save/*to save)) time.', h: 'Câu này nói <b>mục đích</b> (làm vậy <b>để</b> làm gì).' },
+          { t: 'That looks impossible ((open/*to open)).', h: 'Sau <b>tính từ</b> (impossible) dùng dạng nào?' },
+          { t: 'I don’t know what ((do/*to do)).', h: '<b>what / how / where</b> + dạng nào? Xem mục 3.' },
+          { t: 'It’s not easy for me ((speak/*to speak)) {{in public}}.', h: '<b>easy for + someone</b> + dạng nào?' },
+        ] },
+
+      /* Bài 6 (sách Ex 11) – V hay to V (gõ) */
+      { id: '11', type: 'list',
+        title: 'Infinitive with or without <i>to</i>',
+        how: 'Complete the sentences with the infinitive of the verb in brackets, with or without <b>to</b>.',
+        examples: [ 'Can you [[walk]] on your hands? <span class="vb">(walk)</span>' ],
+        items: [
+          { t: 'What are you planning [[to do]] tomorrow?', v: 'do', h: '“plan” là động từ về <b>kế hoạch</b>. Nhớ gõ cả “to” nếu cần.' },
+          { t: 'Are you good at making people [[laugh]]?', v: 'laugh', h: '<b>make + someone</b> + dạng nào?' },
+          { t: 'How often do you use {{chopsticks}} [[to eat]] rice or noodles?', v: 'eat', h: 'Dùng đũa <b>để</b> làm gì → câu chỉ <b>mục đích</b>.' },
+          { t: 'Do you let your friends [[borrow]] your books?', v: '{{borrow}}', h: '<b>let + someone</b> + dạng nào?' },
+          { t: 'Do you know how [[to cook]] pasta?', v: 'cook', h: '<b>how</b> + dạng nào?' },
+          { t: 'Is it ever OK [[to lie]] to someone?', v: '{{lie}}', h: 'Sau <b>tính từ</b> (OK) dùng dạng nào?' },
+          { t: 'Is it difficult for you [[to get]] up in the morning?', v: 'get', h: '<b>difficult for + someone</b> + dạng nào?' },
+        ] },
+
+      /* Bài 7 (sách Ex 14) – to V hay V-ing */
+      { id: '14', type: 'list',
+        title: 'Choose the correct form',
+        how: 'Tap the correct form.',
+        examples: [ 'She {{refuse|refuses}} ((*to {{discuss}}/discussing)) it.' ],
+        items: [
+          { t: 'I can’t {{imagine}} ((to live/*living)) there.', h: '“imagine” thuộc cột nào trong bảng ở mục 4 ô Grammar?' },
+          { t: 'He’s {{pretend|pretending}} ((*to be/being)) sad.', h: '“pretend” thuộc cột nào trong bảng ở mục 4?' },
+          { t: 'You need to {{practise}} ((to hit/*hitting)) the ball.', h: '“practise” thuộc cột nào trong bảng ở mục 4?' },
+          { t: 'Do you {{fancy}} ((to meet/*meeting)) at the park?', h: '“fancy” (= muốn, thích) thuộc cột nào trong bảng ở mục 4?' },
+          { t: 'I don’t {{intend}} ((*to take/taking)) the exam.', h: '“intend” (= dự định) là động từ về <b>kế hoạch</b>.' },
+          { t: 'Do you promise ((*to stay/staying)) here?', h: '“promise” thuộc cột nào trong bảng ở mục 4?' },
+          { t: 'He {{can\'t stand|can’t stand}} ((to wait/*waiting)) for people.', h: '“can’t stand” thuộc cột nào trong bảng ở mục 4?' },
+          { t: 'Ryan has {{arrange|arranged}} ((*to visit/visiting)) them.', h: '“arrange” thuộc cột nào trong bảng ở mục 4?' },
+          { t: 'I’d {{prefer}} ((*to go/going)) by bus.', h: '“would prefer” thuộc cột nào trong bảng ở mục 4?' },
+        ] },
+
+      /* Bài 8 (sách Ex 15) – dạng đúng của động từ (gõ) */
+      { id: '15', type: 'list',
+        title: 'Complete the sentences',
+        how: 'Complete the sentences with the correct form of the verbs in brackets.',
+        examples: [ 'Does Mike enjoy [[acting]]? <span class="vb">(act)</span>' ],
+        items: [
+          { t: 'I {{don\'t mind|don’t mind}} [[asking]] for help.', v: 'ask', h: '“don’t mind” thuộc cột nào trong bảng ở mục 4?' },
+          { t: 'It’s starting [[to rain|raining]].', v: 'rain', h: '“start” đi được với cả hai dạng. Nhớ gõ cả “to” nếu dùng to V.' },
+          { t: 'I think Alice {{deserve|deserves}} [[to win]].', v: 'win', h: '“deserve” thuộc cột nào trong bảng ở mục 4? Nhớ gõ cả “to” nếu cần.' },
+          { t: 'He {{practise|practised}} [[writing]] his name.', v: 'write', h: '“practise” thuộc cột nào? Động từ tận cùng bằng <b>-e</b> → bỏ e rồi thêm -ing.' },
+          { t: 'I hate [[being|to be]] late.', v: 'be', h: '“hate” đi được với cả hai dạng. Kiểm tra lại cách viết.' },
+          { t: 'Did you {{manage}} [[to speak]] to her?', v: 'speak', h: '“manage” thuộc cột nào trong bảng ở mục 4?' },
+          { t: 'We can’t {{risk}} [[stopping]] now.', v: 'stop', h: '“risk” thuộc cột nào? “stop” 1 âm tiết, tận cùng nguyên âm + phụ âm → gấp đôi phụ âm cuối.' },
+          { t: 'They {{refuse|refused}} [[to give]] me a reason.', v: 'give', h: '“refuse” thuộc cột nào trong bảng ở mục 4?' },
+          { t: 'Let’s stop [[talking]] about this now. We’ve said everything.', v: 'talk', h: 'Ý câu: <b>ngừng</b> nói chuyện này. Xem phần “stop” ở mục 4.' },
+          { t: 'You need [[to open]] the door now.', v: 'open', h: '“need” thuộc cột nào trong bảng ở mục 4?' },
+          { t: 'We tried [[switching]] the computer on and off again, but that didn’t help.', v: 'switch', h: 'Ý câu: đã <b>làm thử</b> (tắt rồi bật lại) xem có được không. Xem phần “try” ở mục 4.' },
+          { t: 'We’re {{aim|aiming}} [[to leave]] at two.', v: 'leave', h: '“aim” thuộc cột nào trong bảng ở mục 4?' },
+        ] },
+
+      /* Bài 9 (sách Ex 16) – đoạn văn, 15 chỗ trống */
+      { id: '16', type: 'text',
+        title: 'A guide to the city',
+        how: 'Complete the text with the infinitive or -ing form of the verbs in brackets.',
+        paras: [
+          { t: '<b class="ph">Shopping</b> – If you want <span class="exv">to go</span> [[shopping]] (shop), then it’s {{fascinating}} [[to explore]] ({{explore}}) the Riverside area. {{expect|Expect}} [[to see]] (see) high prices in the shops: this isn’t a cheap part of town! For a different shopping experience, spend some time [[walking]] (walk) around Central Market. It’s not {{worth}} [[going]] (go) after one o’clock, though. Most of the {{stalls}} start closing at midday. At the Crafts Centre there are shops and {{workshops}} where you can [[see]] (see) people [[making|make]] (make) {{ceramics}} and {{jewellery}}.',
+            h: ['<b>go</b> + hoạt động mua sắm, giải trí.', 'Sau <b>tính từ</b> (fascinating) dùng dạng nào?', '“expect” thuộc cột nào trong bảng ở mục 4?', '<b>spend time</b> + dạng nào?', '<b>it’s (not) worth</b> + dạng nào?', 'Sau <b>can</b> (động từ khuyết thiếu) dùng dạng nào?', 'Thấy người ta <b>đang</b> làm (chỉ thấy 1 phần hành động).'] },
+          { t: '<b class="ph">Transport</b> – [[travelling|traveling]] (travel) by {{underground}} is expensive, and you’ll miss [[seeing]] (see) many interesting {{sights}}. We {{suggest}} [[taking]] (take) the bus or the tram. The water taxis are also an excellent way of [[getting]] (get) {{get about|about}}.',
+            h: ['Động từ làm <b>chủ ngữ</b> của câu. Viết hoa chữ đầu không bắt buộc.', '“miss” thuộc cột nào trong bảng ở mục 4?', '“suggest” thuộc cột nào trong bảng ở mục 4?', 'Sau <b>giới từ</b> “of” dùng dạng nào?'] },
+          { t: '<b class="ph">Security</b> – {{avoid|Avoid}} [[walking]] (walk) around the city on your own late at night. Remember [[to keep]] (keep) your {{identity card}} with you at all times.',
+            h: ['“avoid” thuộc cột nào trong bảng ở mục 4?', 'Đây là lời <b>nhắc phải làm</b>. Xem phần “remember” ở mục 4.'] },
+          { t: '<b class="ph">Would you like [[to know]] (know) more?</b> – Visit our website [[to read]] (read) about the history of this exciting city.',
+            h: ['“would like” thuộc cột nào trong bảng ở mục 4?', 'Vào website <b>để</b> làm gì → câu chỉ <b>mục đích</b>.'] },
         ] },
     ],
   },

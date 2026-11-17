@@ -209,3 +209,37 @@ input.txt.noun{width:12em;max-width:100%;padding:3px 8px}
 .stat{flex:1;min-width:90px;max-width:150px;background:var(--brand-soft);border-radius:14px;padding:8px 6px;display:flex;flex-direction:column;line-height:1.25}
 .stat b{font-size:22px} .stat span{font-size:13.5px;color:var(--muted);font-weight:700}
 .stars span.off{filter:grayscale(1);opacity:.3}
+
+/* ===== Unit 8: hình đầu bài, động từ trong ngoặc, ✓/✗, đoạn văn ===== */
+.eximg{display:block;width:100%;max-width:620px;height:auto;border-radius:12px;margin:4px auto 10px}
+.vb{color:var(--muted);font-weight:700;white-space:nowrap}
+.tk{display:inline-flex;gap:4px;margin-left:8px;vertical-align:middle}
+.tkb{font:inherit;font-weight:800;width:34px;height:30px;border-radius:9px;border:2px solid #c9d3df;background:#f5f7fb;cursor:pointer;line-height:1;color:var(--muted)}
+.tkb[data-v="y"].on{background:var(--ok);border-color:var(--ok);color:#fff}
+.tkb[data-v="n"].on{background:var(--bad);border-color:var(--bad);color:#fff}
+.tkb:disabled{cursor:default}
+.ptext .para{line-height:2.3;margin:0 0 6px}
+.ptext .ph{color:#c0392b}
+.bnum{font-weight:800;color:var(--brand);font-size:12px;margin-right:2px}
+.ptext .fix{margin:-2px 0 10px}
+
+/* ===== ghi âm (đọc to, nói về bản thân) ===== */
+.recbox{margin-top:14px;border:2px dashed #c9c1f5;border-radius:14px;padding:12px 14px;background:#faf9ff}
+.recbox h3{margin:0 0 2px;font-size:18px;color:var(--brand-dark)}
+.recbox .how{margin:2px 0 8px;font-size:16px}
+.ralist{margin:0 0 10px;padding-left:24px;line-height:1.8}
+.raa{color:var(--blue)}
+.sqs{display:flex;flex-direction:column;gap:12px}
+.spq{border:2px solid var(--line);border-radius:14px;padding:10px 12px;background:#fcfbff}
+.spl{display:flex;align-items:center;gap:8px;font-size:17px}
+.spl .cn{flex:none;min-width:28px;height:28px;border-radius:999px;background:var(--brand);color:#fff;font-weight:800;font-size:15px;display:inline-flex;align-items:center;justify-content:center}
+.spm{margin:4px 0 8px;font-size:15px;color:#5d6878}
+.sq{border:2px solid var(--line);border-radius:12px;padding:8px 10px;background:#fff}
+.sq.done{border-color:#9bdcb6;background:#f4fcf7}
+.sq.live{border-color:var(--bad);background:#fff6f6}
+.sqr{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.sqr audio{height:38px;flex:1;min-width:200px}
+.sqs-st{margin-left:auto;font-weight:800;font-size:14.5px;color:var(--ok)}
+.dot{width:12px;height:12px;border-radius:999px;background:var(--bad);animation:blink 1s infinite}
+@keyframes blink{50%{opacity:.25}}
+body.retrying .recbox,body.retrying .tk{display:none}
