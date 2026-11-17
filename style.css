@@ -227,8 +227,6 @@ input.txt.noun{width:12em;max-width:100%;padding:3px 8px}
 .recbox{margin-top:14px;border:2px dashed #c9c1f5;border-radius:14px;padding:12px 14px;background:#faf9ff}
 .recbox h3{margin:0 0 2px;font-size:18px;color:var(--brand-dark)}
 .recbox .how{margin:2px 0 8px;font-size:16px}
-.ralist{margin:0 0 10px;padding-left:24px;line-height:1.8}
-.raa{color:var(--blue)}
 .sqs{display:flex;flex-direction:column;gap:12px}
 .spq{border:2px solid var(--line);border-radius:14px;padding:10px 12px;background:#fcfbff}
 .spl{display:flex;align-items:center;gap:8px;font-size:17px}

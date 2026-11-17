@@ -4,7 +4,7 @@
    • OPEN_WEEK: tuần đang mở. Mỗi tuần thêm 1 bài vào LESSONS rồi tăng số này.
      Các bài tuần trước vẫn mở để học sinh xem lại.
    • Chữ highlight (bấm xem nghĩa): {{khoá}} hoặc {{khoá|chữ hiển thị}}; khoá phải có trong VOCAB.
-   • newWords = danh sách "New words" đầu bài (để chép vở): chỉ từ B1, và A2 nếu thật sự ít gặp
+   • newWords = danh sách "New words" đầu bài (để chép vở): CHỈ từ B1 cho đỡ ngợp. Từ A2 ít gặp / trên B1 vẫn tô vàng trong bài để bấm xem nghĩa
      với học sinh VN. Không lấy từ trong câu lệnh đề bài.
    • Chỗ làm bài trong câu:
        ((a/*b))          chọn 1 – dấu * đánh dấu đáp án đúng
@@ -103,7 +103,7 @@ const VOCAB = {
 const LESSONS = {
   1: {
     code: 'Unit 1', title: 'Countable and uncountable nouns; articles', 
-    newWords: ['mud', 'hopes', 'drop of rain', 'furniture', 'lorry', 'puddle', 'shelf', 'matches', 'kindness', 'space', 'slice', 'spoonful', 'block', 'sadness', 'excitement', 'jar', 'jam', 'energy', 'packet', 'crisps', 'carton', 'wheel', 'pollution', 'toast', 'torch', 'dessert', 'design', 'unfortunately', 'style', 'skiing', 'Mediterranean Sea'],
+    newWords: ['mud', 'hopes', 'drop of rain', 'matches', 'kindness', 'space', 'slice', 'spoonful', 'block', 'sadness', 'excitement', 'jar', 'energy', 'packet', 'carton', 'pollution', 'torch', 'design', 'style'],
     // Ô Grammar: tóm tắt thật ngắn, ví dụ KHÔNG trùng với câu trong bài tập
     grammar: `
       <h4>1. Đếm được (C) – Không đếm được (U)</h4>
@@ -264,10 +264,8 @@ const LESSONS = {
   /* ===================== TUẦN 2 – Unit 8 ===================== */
   2: {
     code: 'Unit 8', title: 'The -ing form and the infinitive',
-    newWords: ['chess', 'ski', 'skip', 'feel like', 'pastime', 'shells', 'gloves', 'washing-up', 'worth', 'possessions', 'own',
-      'promise', 'borrow', 'in public', 'chopsticks', 'lie', 'refuse', 'discuss', 'imagine', 'pretend', 'practise', 'fancy', 'intend',
-      "can't stand", 'arrange', 'prefer', "don't mind", 'deserve', 'manage', 'risk', 'aim', 'fascinating', 'explore', 'expect',
-      'stalls', 'workshops', 'ceramics', 'jewellery', 'underground', 'sights', 'suggest', 'get about', 'avoid', 'identity card'],
+    newWords: ['feel like', 'washing-up', 'worth', 'own', 'promise', 'borrow', 'lie', 'refuse', 'discuss', 'imagine', 'pretend',
+      'fancy', 'intend', "can't stand", 'arrange', 'manage', 'fascinating', 'explore', 'expect', 'sights', 'suggest', 'avoid'],
     // Ô Grammar: chỉ phần liên quan các bài được chọn, ví dụ KHÔNG trùng câu trong bài tập
     grammar: `
       <h4>1. V-ing</h4>

@@ -345,18 +345,6 @@ function paintRec(){
     });
   });
 }
-// Đọc to: hiện lại các câu với đáp án em đã điền
-function raSentence(e, it){
-  const keys = keysOf(e, it), parts = []; let i = 0;
-  const s = plain(String(it.t).replace(TOK, () => { parts.push(keys[i++]); return '\u0001' + (parts.length - 1) + '\u0001'; }));
-  return esc(s).replace(/\u0001(\d+)\u0001/g, (_, n) => { const a = ansText(qOf(parts[n])); return `<b class="raa">${a ? esc(a) : '___'}</b>`; });
-}
-function paintRA(){
-  LESSON.ex.filter(e => e.readAloud).forEach(e => {
-    const ol = $('#ral-' + e.id); if (!ol) return;
-    ol.innerHTML = itemsOfEx(e).map(it => `<li>${raSentence(e, it)}</li>`).join('');
-  });
-}
 function paintTicks(){
   $$('.tk').forEach(t => {
     const v = S.tick[t.dataset.tk];
@@ -405,8 +393,8 @@ function exList(e){
   const ex = (e.examples || []).map((t, j) => `<div class="it example${e.conv ? ' conv' : ''}"><span class="cn">▶</span><div class="itb">${renderT(t, null, true)}${e.tick ? tickBtns(e.id + '-ex' + (j || '')) : ''}</div></div>`).join('');
   return `<div class="items">${ex}${itemsOfEx(e).map(it => `<div class="it${e.conv ? ' conv' : ''}" data-item="${e.id}-${it.n}">
       <span class="cn">${it.n}</span><div class="itb">${renderT(it.t, keysOf(e, it))}${it.v ? ` <span class="vb">(${vt(it.v)})</span>` : ''}${e.tick ? tickBtns(e.id + '-' + it.n) : ''}${fixBox(e, it)}</div></div>`).join('')}</div>
-    ${e.readAloud ? `<div class="recbox"><h3>🎙 Read aloud</h3><p class="how">Now read your sentences aloud and record yourself.</p>
-      <ol class="ralist" id="ral-${e.id}"></ol><div class="sq" id="sq-${e.id}-ra"></div></div>` : ''}`;
+    ${e.readAloud ? `<div class="recbox"><h3>🎙 Read aloud</h3><p class="how">Now read all the sentences above aloud (with your answers) and record yourself.</p>
+      <div class="sq" id="sq-${e.id}-ra"></div></div>` : ''}`;
 }
 // đoạn văn có chỗ trống đánh số
 function exText(e){
@@ -539,7 +527,6 @@ function progress(){
     $('#progF').style.width = (R.total ? R.score / R.total * 100 : 100) + '%';
     $('#submitBtn').hidden = true;
   } else if (S.phase === 'work'){
-    paintRA();
     const ticks = $$('.tk').map(t => t.dataset.tk);
     const all = QS.length + RECS.length + ticks.length;
     const d = QS.filter(answered).length + RECS.filter(sl => S.rec[sl.qk]).length + ticks.filter(k => S.tick[k]).length;
@@ -705,7 +692,7 @@ function renderSummary(){
     ${R.score < R.total ? '<div class="big">Let’s review the answers below 👇</div>' : ''}</div></div>`;
   updateStatus();
 }
-function paintAll(){ paintMarks(); paintChoices(); paintTicks(); paintRec(); paintRA(); focusWrong(S.phase === 'retry'); renderTop(); renderSummary(); renderWho(); progress(); }
+function paintAll(){ paintMarks(); paintChoices(); paintTicks(); paintRec(); focusWrong(S.phase === 'retry'); renderTop(); renderSummary(); renderWho(); progress(); }
 
 /* ============ NỘP BÀI ============ */
 async function onSubmit(){
