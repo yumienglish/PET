@@ -194,3 +194,18 @@ input.txt.noun{width:12em;max-width:100%;padding:3px 8px}
 .pct .cn{margin:0 4px 0 0;vertical-align:middle}
 .pc input.txt.gap{width:4em}
 .lr input.txt.gap{width:10em;text-align:left;padding:3px 8px}
+
+/* meme cảm xúc của cô sau lần nộp 1 */
+.meme{width:160px;max-width:42vw;height:auto;border-radius:14px;box-shadow:0 3px 10px rgba(0,0,0,.18);flex:none}
+.summary .sumr{min-width:140px}
+.guide h2{margin:0 0 8px;font-size:20px}
+.guide .vgrid{margin-top:10px}
+
+/* Trang chủ: ô chào + sao thành tích */
+.hi{text-align:center;background:linear-gradient(180deg,#fff,#f6f3ff)}
+.hi h2{margin:0;font-size:clamp(26px,6vw,34px);font-weight:800;color:var(--brand-dark)}
+.hiline{margin:4px 0 14px;font-size:18px;font-weight:700}
+.stats{display:flex;justify-content:center;gap:10px;flex-wrap:wrap}
+.stat{flex:1;min-width:90px;max-width:150px;background:var(--brand-soft);border-radius:14px;padding:8px 6px;display:flex;flex-direction:column;line-height:1.25}
+.stat b{font-size:22px} .stat span{font-size:13.5px;color:var(--muted);font-weight:700}
+.stars span.off{filter:grayscale(1);opacity:.3}

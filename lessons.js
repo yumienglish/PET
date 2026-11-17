@@ -1,9 +1,11 @@
 /* =====================================================================
-   PET Grammar – DỮ LIỆU BÀI HỌC (sách Oxford Grammar for Schools 5)
+   PET Adventure – DỮ LIỆU BÀI HỌC (sách Oxford Grammar for Schools 5)
    ---------------------------------------------------------------------
    • OPEN_WEEK: tuần đang mở. Mỗi tuần thêm 1 bài vào LESSONS rồi tăng số này.
      Các bài tuần trước vẫn mở để học sinh xem lại.
-   • Từ mới: {{khoá}} hoặc {{khoá|chữ hiển thị}}; khoá phải có trong VOCAB.
+   • Chữ highlight (bấm xem nghĩa): {{khoá}} hoặc {{khoá|chữ hiển thị}}; khoá phải có trong VOCAB.
+   • newWords = danh sách "New words" đầu bài (để chép vở): chỉ từ B1, và A2 nếu thật sự ít gặp
+     với học sinh VN. Không lấy từ trong câu lệnh đề bài.
    • Chỗ làm bài trong câu:
        ((a/*b))          chọn 1 – dấu * đánh dấu đáp án đúng
        ((*a/*b/c))       chọn 2 (số dấu * = số lựa chọn phải chọn)
@@ -55,7 +57,8 @@ const VOCAB = {
 /* ---------- BÀI HỌC THEO TUẦN ---------- */
 const LESSONS = {
   1: {
-    code: 'Unit 1', title: 'Countable and uncountable nouns; articles', pages: 'Student’s Book p.6–9',
+    code: 'Unit 1', title: 'Countable and uncountable nouns; articles', 
+    newWords: ['mud', 'hopes', 'drop of rain', 'furniture', 'lorry', 'puddle', 'shelf', 'matches', 'kindness', 'space', 'slice', 'spoonful', 'block', 'sadness', 'excitement', 'jar', 'jam', 'energy', 'packet', 'crisps', 'carton', 'wheel', 'pollution', 'toast', 'torch', 'dessert', 'design', 'unfortunately', 'style', 'skiing', 'Mediterranean Sea'],
     // Ô Grammar: tóm tắt thật ngắn, ví dụ KHÔNG trùng với câu trong bài tập
     grammar: `
       <h4>1. Đếm được (C) – Không đếm được (U)</h4>
@@ -87,7 +90,6 @@ const LESSONS = {
       { id: '1', type: 'list', page: 'p.7',
         title: 'Countable or uncountable?',
         how: 'Are the underlined nouns countable (C) or uncountable (U)? Tap C or U.',
-        vn: 'Nhìn danh từ <u>gạch chân</u>: đếm được thì chọn <b>C</b>, không đếm được thì chọn <b>U</b>.',
         examples: [
           'I’ve got a good <u>idea</u>! ((*C/U))',
           'Was the <u>weather</u> good? ((C/*U))',
@@ -109,7 +111,6 @@ const LESSONS = {
       { id: '2', type: 'label', page: 'p.7',
         title: 'Label the pictures',
         how: 'Label the pictures with the words in the box. Use <b>a</b>, <b>an</b> or a number with the countable nouns. Use a plural form where necessary. Numbers 1–4 are topics.',
-        vn: 'Mỗi tranh có 1 <b>chủ đề</b> (dòng số 1, 2, 3, 4) và 4 đồ vật <b>a, b, c, d</b>. Danh từ đếm được phải có <b>a / an</b> hoặc <b>số đếm</b> phía trước. Có 2 cái trở lên thì đếm rồi viết số nhiều, VD: <b>two chairs</b>. Từ gạch ngang trong khung là đã dùng ở ví dụ.',
         box: ['bus', 'car', '~chair', 'boy', '{{drop of rain}}', '~{{furniture}}', 'people', '{{lorry}}', 'man', 'motorbike',
           '{{puddle}}', 'girl', 'weather', 'raincoat', 'sofa', '{{shelf}}', '~table', 'transport', 'umbrella', 'woman'],
         groups: [
@@ -131,7 +132,6 @@ const LESSONS = {
       { id: '4', type: 'list', page: 'p.7',
         title: 'Choose the correct word',
         how: 'Tap the correct option.',
-        vn: 'Mỗi câu chạm vào <b>1</b> từ đúng.',
         examples: [ 'There were ten ((mouses/*mice)).' ],
         items: [
           { t: 'Could I have two ((box/*boxes)) of {{matches}}?', h: 'Sau “two” là danh từ số nhiều. Từ tận cùng bằng -x thì thêm -s hay -es?' },
@@ -148,7 +148,6 @@ const LESSONS = {
       { id: '5', type: 'list', page: 'p.7',
         title: 'Choose two correct words',
         how: 'Tap the <b>two</b> correct words in each line.',
-        vn: 'Mỗi dòng có 3 từ, <b>2 từ đúng</b> và 1 từ sai. Chạm vào <b>2</b> từ đúng (chạm lại để bỏ chọn).',
         examples: [ 'a ((*{{slice}}/*piece/drop)) of cake' ],
         items: [
           { t: 'a ((*bit/*piece/litre)) of information', h: '“information” là ý niệm, không phải chất lỏng. Từ nào chỉ dùng để đo chất lỏng?' },
@@ -165,7 +164,6 @@ const LESSONS = {
       { id: '6', type: 'pics', page: 'p.8', only: ['a', 'an', 'some'],
         title: 'a, an or some?',
         how: 'Look at the pictures and write <b>a</b>, <b>an</b> or <b>some</b>.',
-        vn: 'Nhìn tranh rồi gõ <b>a</b>, <b>an</b> hoặc <b>some</b> vào ô trống.',
         examples: [ { img: 'u1-ex6-0.jpg', t: '[[some]] orange juice' } ],
         items: [
           { img: 'u1-ex6-1.jpg', t: '[[a]] glass', h: 'Tranh là 1 cái cốc (đồ vật, đếm được, số ít). “glass” bắt đầu bằng âm phụ âm.' },
@@ -181,7 +179,6 @@ const LESSONS = {
       { id: '9', type: 'list', page: 'p.9', conv: true, only: ['a', 'an', 'the', 'any', 'some'],
         title: 'Complete the conversations',
         how: 'Complete the conversations with <b>a</b>, <b>an</b>, <b>the</b>, <b>any</b> or <b>some</b>.',
-        vn: 'Gõ 1 từ vào mỗi ô: <b>a, an, the, any</b> hoặc <b>some</b>. Gõ xong bấm <b>Enter</b> để nhảy sang ô tiếp theo. Mở ô 📘 Grammar ở đầu bài nếu chưa chắc.',
         examples: [ '‘I bought [[some]] magazines for you.’<br>‘Thanks. Where are they?’<br>‘In [[the]] living room.’' ],
         items: [
           { t: '‘Can I have [[a]] piece of {{toast}} with [[some]] butter, please?’<br>‘Yes, of course.’<br>‘Is there [[any]] {{jam}}?’<br>‘No, I’m afraid not. Do you want [[an]] apple?’<br>‘No, thanks.’',
@@ -202,7 +199,6 @@ const LESSONS = {
       { id: '10', type: 'list', page: 'p.9',
         title: '<i>the</i> or – (no article)?',
         how: 'Complete the sentences with <b>the</b> or <b>–</b> (no article).',
-        vn: 'Chạm <b>the</b> nếu cần “the”, chạm <b>–</b> nếu <b>không</b> cần mạo từ.',
         examples: [ 'They’re {{skiing}} in ((*the/–)) Alps.' ],
         items: [
           { t: 'I’d like to speak to ((*the/–)) manager.', h: 'Người quản lý của chính nơi này: chỉ có 1 người, ai cũng biết là ai.' },

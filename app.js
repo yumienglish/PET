@@ -1,4 +1,4 @@
-/* PET Grammar – giao diện, chấm điểm, làm lại câu sai, gửi bài */
+/* PET Adventure – giao diện, chấm điểm, làm lại câu sai, gửi bài */
 'use strict';
 
 /* ============ TIỆN ÍCH ============ */
@@ -123,18 +123,57 @@ const LESSON = WEEK_NO && WEEK_NO <= OPEN_WEEK ? LESSONS[WEEK_NO] : null;
 const ME_KEY = 'pet-me';
 const storeKey = w => 'pet-w' + w;
 
+// Câu chào trang chủ: mỗi lần mở đổi 1 câu (không lặp lại câu lần trước)
+const HI_LINES = [
+  'Every new word is a new superpower. 💪',
+  'Your brain loves new words. Let’s feed it! 🧠',
+  'Small steps every week = BIG English! 🚀',
+  'Mistakes mean you’re trying. Keep going! 🌱',
+  'You’re getting better every single week. 📈',
+  'Ready for a new adventure? Let’s go! 🎒',
+  'Today’s you is smarter than yesterday’s you. ✨',
+  'Grammar is your secret map. Let’s explore! 🗺️',
+  'Curious minds go far. Let’s explore! 🔭',
+  'One more step towards your PET star. ⭐',
+];
+function hiLine(){
+  let last = lsGet('pet-hi'), i;
+  do { i = Math.floor(Math.random() * HI_LINES.length); } while (HI_LINES.length > 1 && i === last);
+  lsSet('pet-hi', i);
+  return HI_LINES[i];
+}
+// Sao thành tích của 1 bài đã xong: ≥90% → 3 sao, ≥70% → 2 sao, còn lại 1 sao
+function starsOf(s){
+  if (!s || s.phase !== 'done') return 0;
+  const r = s.r2 || s.r1; if (!r || !r.total) return 3;
+  const p = r.score / r.total;
+  return p >= .9 ? 3 : p >= .7 ? 2 : 1;
+}
+const starRow = n => [1, 2, 3].map(i => `<span class="${i <= n ? '' : 'off'}">⭐</span>`).join('');
+
 function renderHome(){
-  document.title = 'PET Grammar';
-  $('#heroSub').textContent = 'Cambridge PET · Oxford Grammar for Schools 5';
+  document.title = 'PET Adventure 🚀';
+  $('#heroSub').textContent = 'Explore · Practise · Level up · Shine ✨';
   const weeks = Object.keys(LESSONS).map(Number).filter(w => w <= OPEN_WEEK).sort((a, b) => b - a);
   const next = LESSONS[OPEN_WEEK + 1];
-  $('#app').innerHTML = `<section class="card">
-      <h2 style="margin:0 0 4px">👋 Hello!</h2>
-      <p class="muted" style="margin:0">Mỗi tuần 1 bài. Chọn bài tuần này, làm xong bấm <b>Submit</b>.</p>
+  const me = lsGet(ME_KEY) || {};
+  const first = String(me.name || '').trim().split(/\s+/).pop();
+  let stars = 0, words = 0;
+  weeks.forEach(w => { const n = starsOf(lsGet(storeKey(w))); stars += n; if (n) words += (LESSONS[w].newWords || []).length; });
+  $('#app').innerHTML = `<section class="card hi">
+      <h2>Hi ${first ? esc(first) : 'superstar'}! 🌟</h2>
+      <p class="hiline">${hiLine()}</p>
+      <div class="stats">
+        <div class="stat"><b>⭐ ${stars}</b><span>stars</span></div>
+        <div class="stat"><b>📒 ${words}</b><span>new words</span></div>
+        <div class="stat"><b>🏁 ${weeks.filter(w => starsOf(lsGet(storeKey(w)))).length}</b><span>adventures</span></div>
+      </div>
+      ${stars ? '' : '<p class="muted small" style="margin:10px 0 0">Your first stars are waiting for you! ⭐</p>'}
     </section>
     ${weeks.map(w => {
       const L = LESSONS[w], s = lsGet(storeKey(w)) || {};
-      const st = s.phase === 'done' ? `<span class="tag ok">✅ Done${s.r2 ? ' · ' + s.r2.score + '/' + s.r2.total : s.r1 ? ' · ' + s.r1.score + '/' + s.r1.total : ''}</span>`
+      const r = s.r2 || s.r1;
+      const st = s.phase === 'done' ? `<span class="tag ok stars">${starRow(starsOf(s))}${r ? ' ' + r.score + '/' + r.total : ''}</span>`
         : s.phase === 'retry' || s.phase === 'review' ? '<span class="tag warn">✏️ Làm lại câu sai</span>'
         : s.startedAt ? '<span class="tag">⏳ In progress</span>' : '<span class="tag new">🆕 New</span>';
       return `<a class="card lesson" href="?w=${w}">
@@ -143,7 +182,7 @@ function renderHome(){
           <div class="ln">${esc(L.code)} · ${esc(L.title)}</div></div>
         <div>${st}</div></a>`;
     }).join('')}
-    ${next ? `<div class="card lesson locked"><div class="lnum">🔒</div><div class="linfo"><div class="lt">Week ${OPEN_WEEK + 1}</div><div class="ln">Coming next week</div></div></div>` : ''}`;
+    ${next ? `<div class="card lesson locked"><div class="lnum">🔒</div><div class="linfo"><div class="lt">Week ${OPEN_WEEK + 1}</div><div class="ln">Next adventure unlocks soon!</div></div></div>` : ''}`;
 }
 
 /* ============ DANH SÁCH CÂU HỎI ============ */
@@ -220,7 +259,7 @@ function exHead(e){
   });
   return `<div class="ex-head"><span class="badge">Exercise ${exNo(e)}</span><h2>${e.title}</h2></div>
     ${e.track ? `<div class="listen"><audio controls preload="none" src="audio/${e.track}.mp3"></audio></div>` : ''}
-    <p class="how">${unv(e.how)}</p>${e.vn ? `<p class="vn">👉 ${e.vn}</p>` : ''}
+    <p class="how">${unv(e.how)}</p>
     ${ws.length ? `<div class="words"><span class="wl">📒 New words:</span> ${ws.map(w => vt(`{{${w}}}`)).join(' ')}</div>` : ''}`;
 }
 function exList(e){
@@ -254,8 +293,7 @@ function buildLesson(){
   document.title = 'PET ' + LESSON.code + ' · ' + LESSON.title;
   $('#heroSub').textContent = `Week ${WEEK_NO} · ${LESSON.code}: ${LESSON.title}`;
   buildQS();
-  const allWords = [];
-  LESSON.ex.map(e => JSON.stringify(Object.assign({}, e, { how: '' }))).join(' ').replace(/\{\{([^}|]+)/g, (_, k) => { if (VOCAB[k] && !allWords.includes(k)) allWords.push(k); });
+  const allWords = (LESSON.newWords || []).filter(k => VOCAB[k]);
   $('#app').innerHTML = `
     <section class="card start" id="start">
       <h2>👋 Hi! What’s your name?</h2>
@@ -270,18 +308,10 @@ function buildLesson(){
       <div id="summaryBox"></div>
       <div class="card who" id="whoBar"></div>
       <section class="card guide">
-        <h2>📌 How to do this homework</h2>
-        <ul class="steps">
-          <li>📘 Chưa chắc ngữ pháp? Mở ô <b>Grammar</b> bên dưới để xem lại.</li>
-          <li>👆 Chữ tô vàng như ${vt('{{furniture}}')} là <b>từ mới</b>: chạm vào để xem nghĩa và nghe đọc.</li>
-          <li>✅ Làm xong bấm <b>Submit</b>. Câu sai sẽ hiện ra để em <b>làm lại 1 lần</b> (có gợi ý), rồi bấm <b>Nộp lần 2</b>.</li>
-          <li>⏱ Cô xem được thời gian làm bài và số lần em rời khỏi trang, nên làm 1 mạch nha.</li>
-        </ul>
-        <div class="note">✍️ Em nhớ <b>chép từ mới vào vở</b> nha!</div>
-        <details class="gram"><summary>📘 Grammar: ${esc(LESSON.title)}</summary><div class="gbody">${LESSON.grammar || ''}</div></details>
-        <details class="vlist"><summary>📒 New words in this lesson (${allWords.length})</summary>
-          <div class="vgrid">${allWords.map(k => `<div class="vi">${vt('{{' + k + '}}')}<span class="vipa">${esc(VOCAB[k].ipa)}</span><span class="vmean">${esc(VOCAB[k].vi)}</span></div>`).join('')}</div>
-        </details>
+        <h2>📒 New words</h2>
+        <div class="note">✍️ Chép từ mới vào vở nha! Chạm vào từ màu vàng để xem nghĩa.</div>
+        <div class="vgrid">${allWords.map(k => `<div class="vi">${vt('{{' + k + '}}')}<span class="vipa">${esc(VOCAB[k].ipa)}</span><span class="vmean">${esc(VOCAB[k].vi)}</span></div>`).join('')}</div>
+        ${LESSON.grammar ? `<details class="gram"><summary>📘 Grammar: ${esc(LESSON.title)}</summary><div class="gbody">${LESSON.grammar}</div></details>` : ''}
       </section>
       ${LESSON.ex.map(e => `<section class="card ex" id="ex${e.id}">${exHead(e)}${
         e.type === 'label' ? exLabel(e) : e.type === 'pics' ? exPics(e) : exList(e)}</section>`).join('')}
@@ -477,27 +507,40 @@ function paintMarks(){
     if (w) w.setAttribute('data-n', q.ti + 1);
   });
 }
+// Meme cảm xúc của cô sau lần nộp 1: img/meme/<mức>-<số>.gif. MEMES = số ảnh mỗi mức (thêm ảnh thì tăng số).
+// Chọn ngẫu nhiên, ưu tiên ảnh em chưa gặp ở các bài trước; giữ cố định khi mở lại trang.
+const MEMES = { wow: 7, good: 8, ok: 8, oops: 6 };
+const SEEN_KEY = 'pet-memes-seen';
+function memeOf(R){
+  const pct = R.total ? R.score / R.total : 1;
+  const tier = pct === 1 ? 'wow' : pct >= .8 ? 'good' : pct >= .5 ? 'ok' : 'oops';
+  if (!S.meme || !S.meme.startsWith(tier + '-')){
+    const all = Array.from({ length: MEMES[tier] }, (_, i) => tier + '-' + (i + 1));
+    let seen = lsGet(SEEN_KEY); if (!Array.isArray(seen)) seen = [];
+    let pool = all.filter(m => !seen.includes(m));
+    if (!pool.length){ seen = seen.filter(m => !m.startsWith(tier + '-')); pool = all; }
+    S.meme = pool[Math.floor(Math.random() * pool.length)];
+    seen.push(S.meme); lsSet(SEEN_KEY, seen); save();
+  }
+  return `<img class="meme" src="img/meme/${S.meme}.gif" alt="">`;
+}
 function renderSummary(){
   const box = $('#summaryBox');
   if (S.phase === 'work'){ box.innerHTML = ''; return; }
-  const secs = R => LESSON.ex.map(e => {
-    const ks = QS.filter(q => q.e === e).map(q => q.k), sc = ks.filter(k => R.items[k].ok).length;
-    return `<span class="sec${sc === ks.length ? ' full' : ''}">Ex ${exNo(e)}: ${sc}/${ks.length}</span>`;
-  }).join('');
   if (S.phase === 'review' || S.phase === 'retry'){
-    box.innerHTML = `<div class="card summary retry"><div class="score">${S.r1.score}<span>/${S.r1.total}</span></div>
-      <div class="sumr"><div class="secs">${secs(S.r1)}</div>
-      <div class="muted small">Màu đỏ = câu sai.</div>
+    // sau lần 1: chỉ meme + điểm
+    box.innerHTML = `<div class="card summary retry">${memeOf(S.r1)}
+      <div class="sumr"><div class="score">${S.r1.score}<span>/${S.r1.total}</span></div>
       <div class="status" id="sendStatus"></div></div></div>`;
     updateStatus();
     return;
   }
-  const R = S.r2 || S.r1, pct = R.total ? R.score / R.total : 0;
-  box.innerHTML = `<div class="card summary"><div class="score">${R.score}<span>/${R.total}</span></div>
-    <div class="sumr"><div class="big">${R.score === R.total ? '🎉 Excellent! All correct!' : pct >= .8 ? '👏 Great job!' : pct >= .5 ? '💪 Good try!' : '📚 Let’s review the answers below.'}</div>
-    <div class="secs">${S.r2 ? `<span class="sec">1st try: ${S.r1.score}/${S.r1.total}</span><span class="sec full">2nd try: ${S.r2.score}/${S.r2.total}</span>` : '<span class="sec full">All correct the first time ⭐</span>'}${secs(R)}</div>
-    <div class="muted small">Câu còn sai có đáp án màu xanh (→).</div>
-    <div class="status" id="sendStatus"></div></div></div>`;
+  // xong: điểm + cô đã nhận bài + Let's review (đúng hết ngay lần 1 thì vẫn có meme)
+  const R = S.r2 || S.r1;
+  box.innerHTML = `<div class="card summary">${S.r2 ? '' : memeOf(S.r1)}
+    <div class="sumr"><div class="score">${R.score}<span>/${R.total}</span></div>
+    <div class="status" id="sendStatus"></div>
+    ${R.score < R.total ? '<div class="big">Let’s review the answers below 👇</div>' : ''}</div></div>`;
   updateStatus();
 }
 function paintAll(){ paintMarks(); paintChoices(); focusWrong(S.phase === 'retry'); renderTop(); renderSummary(); renderWho(); progress(); }
@@ -538,9 +581,9 @@ function updateStatus(){
   const allSent = S.sent1 && (!S.r2 || S.sent2);
   const st = allSent && sendState !== 'sending' ? 'ok' : sendState;
   el.className = 'status ' + (st || '');
-  if (st === 'ok') el.innerHTML = S.phase === 'retry' || S.phase === 'review' ? '✅ Cô đã nhận bài lần 1.' : S.r2 ? '✅ Cô đã nhận được bài lần 2!' : '✅ Cô đã nhận được bài!';
+  if (st === 'ok') el.innerHTML = S.phase === 'retry' || S.phase === 'review' ? '' : '✅ Cô đã nhận được bài!';
   else if (!st) el.innerHTML = '';
-  else if (st === 'sending') el.innerHTML = '⏳ Đang gửi bài cho cô…';
+  else if (st === 'sending') el.innerHTML = '⏳ Đang gửi bài…';
   else el.innerHTML = `⚠️ Chưa gửi được bài${sendErr ? ` (${esc(sendErr)})` : ''}. Em kiểm tra mạng rồi bấm: <button class="btn sm" type="button" id="resendBtn">Gửi lại</button>`;
   const rb = $('#resendBtn'); if (rb) rb.onclick = send;
 }
