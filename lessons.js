@@ -187,7 +187,7 @@ const LESSONS = {
         how: 'Listen to the clues and tap the correct answer.',
         examples: [ '((Portugal/India/*Argentina))' ],
         items: [
-          { t: '((a lemon/*a potato/a book))', h: 'Nghe lại 3 gợi ý: nặng bao nhiêu, có chất gì, vị ra sao.' },
+          { t: '((*a lemon/a potato/a book))', h: 'Nghe lại 3 gợi ý: nặng bao nhiêu, có chất gì, vị ra sao.' },
           { t: '((*flowers/rocks/animals))', h: 'Nghe lại: thấy ở đâu, cần những gì để sống, mùi thế nào.' },
           { t: '((rice/coffee/*tea))', h: 'Nghe lại: cần gì để pha, đến từ đâu.' },
           { t: '((*the past/the present/the future))', h: 'Nghe lại: ta nhớ và quên một phần, xem ảnh và kể chuyện về nó.' },
