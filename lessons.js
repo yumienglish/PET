@@ -97,12 +97,172 @@ const VOCAB = {
   'avoid':         { w: 'avoid', ipa: '/əˈvɔɪd/', vi: 'tránh' },
   'identity card': { w: 'identity card', ipa: '/aɪˈdentəti kɑːd/', vi: 'thẻ căn cước' },
   'Mediterranean Sea': { w: 'Mediterranean Sea', ipa: '/ˌmedɪtəˈreɪniən siː/', vi: 'biển Địa Trung Hải' },
+  /* Unit 5 */
+  'covering':      { w: 'covering', ipa: '/ˈkʌvərɪŋ/', vi: 'lớp che phủ, lớp bọc' },
+  'eyelids':       { w: 'eyelids', ipa: '/ˈaɪlɪdz/', vi: 'mí mắt' },
+  'hardly ever':   { w: 'hardly ever', ipa: '/ˈhɑːdli ˈevə/', vi: 'hầu như không bao giờ' },
+  'flavour':       { w: 'flavour', ipa: '/ˈfleɪvə/', vi: 'hương vị' },
+  'depend on':     { w: 'depend on', ipa: '/dɪˈpend ɒn/', vi: 'phụ thuộc vào, tuỳ vào' },
+  'matter':        { w: 'matter', ipa: '/ˈmætə/', vi: 'quan trọng, có ý nghĩa (It doesn’t matter = không sao đâu)' },
+  'seem':          { w: 'seem', ipa: '/siːm/', vi: 'có vẻ, dường như' },
+  'belong to':     { w: 'belong to', ipa: '/bɪˈlɒŋ tə/', vi: 'thuộc về (của ai)' },
+  'measure':       { w: 'measure', ipa: '/ˈmeʒə/', vi: 'đo (kích thước)' },
+  'weigh':         { w: 'weigh', ipa: '/weɪ/', vi: 'cân; nặng (bao nhiêu)' },
+  'realize':       { w: 'realize', ipa: '/ˈrɪəlaɪz/', vi: 'nhận ra' },
+  'notice':        { w: 'notice', ipa: '/ˈnəʊtɪs/', vi: 'tấm biển, thông báo' },
+  'treasure':      { w: 'treasure', ipa: '/ˈtreʒə/', vi: 'kho báu' },
 };
 
 /* ---------- BÀI HỌC THEO TUẦN ---------- */
 const LESSONS = {
+  /* ===================== TUẦN 1 – Unit 5 ===================== */
   1: {
-    code: 'Unit 1', title: 'Countable and uncountable nouns; articles', 
+    code: 'Unit 5', title: 'The present',
+    newWords: ['hardly ever', 'flavour', 'depend on', 'matter', 'seem', 'belong to', 'own', 'measure', 'weigh', 'realize', 'notice', 'treasure'],
+    // Ô Grammar: tóm tắt thật ngắn, ví dụ KHÔNG trùng với câu / cụm trong bài tập
+    grammar: `
+      <h4>1. Hiện tại đơn: V / V-s</h4>
+      <ul>
+        <li>Thói quen, việc lặp lại: <i>My dad <b>walks</b> to work.</i> Trạng từ <i>always, usually, often, sometimes, rarely, hardly ever, never</i> đứng <b>trước</b> động từ thường, <b>sau</b> be: <i>She <b>often</b> cooks. He’s <b>never</b> late.</i></li>
+        <li>Sự thật, khoa học: <i>Water <b>boils</b> at 100°C.</i> · Tình huống lâu dài: <i>They <b>live</b> in Hanoi.</i></li>
+        <li>Lịch trình, giờ tàu xe (cả trong tương lai): <i>The film <b>starts</b> at 7.</i></li>
+      </ul>
+      <h4>2. Hiện tại tiếp diễn: am / is / are + V-ing</h4>
+      <ul>
+        <li>Đang xảy ra lúc nói (<i>now, at the moment</i>): <i>Listen! Someone <b>is knocking</b> at the door.</i></li>
+        <li>Tạm thời (<i>this week, these days</i>): <i>I<b>’m staying</b> with my aunt this month.</i></li>
+        <li>Đang thay đổi dần: <i>Prices <b>are going</b> up.</i></li>
+        <li>Kế hoạch đã hẹn (có thời gian tương lai): <i>We<b>’re flying</b> to Da Nang on Sunday.</i></li>
+      </ul>
+      <h4>3. Động từ trạng thái: thường KHÔNG dùng -ing</h4>
+      <ul>
+        <li>Thích, muốn: <i>love, prefer, wish</i> · Suy nghĩ: <i>forget, suppose</i> · Giác quan: <i>sound, smell</i> · Đặc điểm, sở hữu: <i>cost, possess, equal, exist</i></li>
+        <li><i>This bag <b>costs</b> $20.</i> (không nói <s>is costing</s>)</li>
+      </ul>
+      <h4>4. Động từ có 2 nghĩa</h4>
+      <table>
+        <tr><th>Trạng thái → đơn</th><th>Hành động → tiếp diễn được</th></tr>
+        <tr><td><i>She <b>has</b> a cat.</i> (sở hữu)</td><td><i>She<b>’s having</b> a shower.</i></td></tr>
+        <tr><td><i>I <b>think</b> it’s easy.</i> (= cho rằng)</td><td><i>He<b>’s thinking</b> of his holiday.</i> (= đang nghĩ)</td></tr>
+        <tr><td><i>This milk <b>tastes</b> sour.</i></td><td><i>Mum <b>is tasting</b> the sauce.</i></td></tr>
+        <tr><td><i>He <b>is</b> funny.</i> (tính cách)</td><td><i>He<b>’s being</b> silly today.</i> (cư xử nhất thời)</td></tr>
+        <tr><td><i>The label <b>says</b> ‘Shake well’.</i> (chữ viết)</td><td><i>What <b>is</b> she <b>saying</b>?</i> (lời nói)</td></tr>
+      </table>`,
+    ex: [
+      /* Bài 1 (sách Ex 2) – chọn thì trong hội thoại, KHÔNG có audio để nghe check */
+      { id: '2', type: 'list', conv: true,
+        title: 'Four conversations',
+        how: 'Tap the correct options.',
+        examples: [ '<b>A</b> Hello, Hanford Theatre. Can I help you?<br><b>B</b> Yes, I ((come/*’m coming)) to the show <i>Up and Up</i> this evening. What time ((*does it finish/is it finishing))?<br><b>A</b> At half past eight.' ],
+        items: [
+          { t: '<b>A</b> Where are your glasses?<br><b>B</b> What do you mean?<br><b>A</b> You usually ((*wear/are wearing)) glasses.<br><b>B</b> Yes, but I don’t <i>always</i> wear glasses. I ((*wear/’m wearing)) them for reading, that’s all.<br><b>A</b> But you ((read/*’re reading)) a magazine now!<br><b>B</b> I ((only look/*’m only looking)) at the pictures at the moment.',
+            h: ['“usually” → thói quen.', 'B nói chung chung: đeo kính khi nào (thói quen), không phải lúc này.', '“now” → đang xảy ra lúc nói.', '“at the moment” → đang xảy ra lúc nói.'] },
+          { t: '<b>A</b> What ((do you do/*are you doing)) this afternoon, Tim?<br><b>B</b> I ((meet/*’m meeting)) my friend George. We ((*play/’re playing)) chess every Monday.<br><b>A</b> Really? I ((*still don’t understand/’m still not understanding)) the rules of chess!',
+            h: ['Hỏi về <b>kế hoạch</b> chiều nay (đã sắp xếp).', 'Kế hoạch đã hẹn với bạn.', '“every Monday” → thói quen.', '“understand” là động từ <b>suy nghĩ</b> → trạng thái.'] },
+          { t: '<b>A</b> Here’s an interesting fact for you. A fish never ((*closes/’s closing)) its eyes.<br><b>B</b> Really?<br><b>A</b> No. It ((*has/’s having)) a clear {{covering}} over its eyes. It ((*doesn’t have/isn’t having)) {{eyelids}} like other animals.<br><b>B</b> Amazing!',
+            h: ['Sự thật về loài cá, luôn đúng.', '“have” ở đây = có (đặc điểm cơ thể).', '“have” ở đây = có (đặc điểm cơ thể). Câu phủ định.'] },
+          { t: '<b>A</b> Have you got any plans for this evening, Claire?<br><b>B</b> Yes, I ((play/*’m playing)) tennis with a friend.<br><b>A</b> How often ((*do you play/are you playing))?<br><b>B</b> Once or twice a week.',
+            h: ['Kế hoạch đã hẹn cho tối nay.', '“How often” hỏi về thói quen.'] },
+        ] },
+
+      /* Bài 2 (sách Ex 4) – gõ thì đúng */
+      { id: '4', type: 'list',
+        title: 'Present simple or present continuous?',
+        how: 'Complete the sentences with the present simple or present continuous form of the verb in brackets.',
+        examples: [ 'I [[visit]] the dentist twice a year. <span class="vb">(visit)</span>' ],
+        items: [
+          { t: 'She [[likes]] cold weather.', v: 'like', h: '“like” là động từ trạng thái. Chủ ngữ “She”.' },
+          { t: 'What time [[does the bank open]]?', v: 'the bank/open', h: 'Giờ mở cửa = lịch cố định. Nhớ trật tự câu hỏi.' },
+          { t: 'We usually have hot meals but this week we [[’re having|are having]] sandwiches.', v: 'have', h: '“this week” → tình huống tạm thời. “have” = ăn (hành động).' },
+          { t: 'Giraffes [[sleep]] for three or four hours a day.', v: 'sleep', h: 'Sự thật về loài vật, luôn đúng.' },
+          { t: 'What [[are you doing]] this afternoon?', v: 'you/do', h: 'Hỏi về <b>kế hoạch</b> chiều nay. Nhớ trật tự câu hỏi.' },
+          { t: 'It [[hardly ever rains]] here.', v: '{{hardly ever}}/rain', h: 'Thói quen, tình huống chung. Trạng từ tần suất đứng trước động từ. Chủ ngữ “It”.' },
+          { t: 'My sister [[hasn’t got|has not got]] black hair.', v: 'not/have got', h: 'Đặc điểm (tóc màu gì). Dùng đúng “have got”, câu phủ định, chủ ngữ “My sister”.' },
+          { t: 'Molly [[’s getting|is getting]] hungry. I’ll make her a snack.', v: 'get', h: 'Đang <b>thay đổi dần</b> (càng lúc càng đói).' },
+        ] },
+
+      /* Bài 3 (sách Ex 6) – nghe và chọn */
+      { id: '6', type: 'list', track: 'u5-ex6',
+        title: 'What is it?',
+        how: 'Listen to the clues and tap the correct answer.',
+        examples: [ '((Portugal/India/*Argentina))' ],
+        items: [
+          { t: '((a lemon/*a potato/a book))', h: 'Nghe lại 3 gợi ý: nặng bao nhiêu, có chất gì, vị ra sao.' },
+          { t: '((*flowers/rocks/animals))', h: 'Nghe lại: thấy ở đâu, cần những gì để sống, mùi thế nào.' },
+          { t: '((rice/coffee/*tea))', h: 'Nghe lại: cần gì để pha, đến từ đâu.' },
+          { t: '((*the past/the present/the future))', h: 'Nghe lại: ta nhớ và quên một phần, xem ảnh và kể chuyện về nó.' },
+          { t: '((music/*love/money))', h: 'Nghe lại: không nặng, không tốn tiền, ở nước nào cũng giống nhau.' },
+        ] },
+
+      /* Bài 4 (sách Ex 7) – động từ trạng thái trong khung */
+      { id: '7', type: 'list', conv: true,
+        title: 'State verbs',
+        how: 'Complete the answers with the correct form of the state verbs in the box.',
+        box: ['{{matter}}', 'remember', 'know', 'agree', '~hate', 'understand', '{{depend on}}', 'look', 'believe'],
+        examples: [ '‘Does he like basketball?’<br>‘No, he [[hates]] it!’' ],
+        items: [
+          { t: '‘Do you like ice-cream?’<br>‘It [[depends on]] the {{flavour}}.’', h: 'Ý: “còn tuỳ vào” vị kem. Chủ ngữ “It” → thêm -s.' },
+          { t: '‘Why isn’t he saying anything?’<br>‘He [[doesn’t understand|does not understand]] you.’', h: 'Anh ấy im lặng vì không hiểu. Câu phủ định, chủ ngữ “He”.' },
+          { t: '‘What’s the capital city of New Zealand?’<br>‘I [[don’t know|do not know]].’', h: 'Trả lời khi không có thông tin. Câu phủ định.' },
+          { t: '‘We should do something about it.’<br>‘I [[agree]]. Let’s tell a teacher.’', h: 'Đồng ý với ý kiến của bạn.' },
+          { t: '‘I’m really sorry. Your book got wet in the rain.’<br>‘It [[doesn’t matter|does not matter]].’', h: 'Ý: “không sao đâu”. Câu phủ định, chủ ngữ “It”.' },
+          { t: '‘What do you think of my new dress?’<br>‘You [[look]] very nice.’', h: 'Khen vẻ bề ngoài (trông…).' },
+          { t: '‘I told you last week!’<br>‘Really? I [[don’t remember|do not remember]].’', h: 'Bạn nói rồi nhưng mình quên. Câu phủ định.' },
+          { t: '‘I didn’t tell Rosy! Really I didn’t!’<br>‘It’s OK. I [[believe]] you!’', h: 'Mình tin lời bạn nói.' },
+        ] },
+
+      /* Bài 5 (sách Ex 8) – trạng thái hay hành động */
+      { id: '8', type: 'list',
+        title: 'State or action?',
+        how: 'Is the verb in <b>bold</b> a <b>state</b> verb or an <b>action</b> verb? Tap the correct answer.',
+        examples: [ 'They <b>work</b> hard. → ((State/*Action))' ],
+        items: [
+          { t: 'You <b>{{seem}}</b> very happy today! → ((*State/Action))', h: 'Động từ chỉ <b>ấn tượng</b> (trông có vẻ).' },
+          { t: 'They <b>have</b> lunch together every day. → ((State/*Action))', h: '“have lunch” = ăn trưa, không phải “có / sở hữu”.' },
+          { t: 'I <b>need</b> more time. → ((*State/Action))', h: 'Động từ chỉ <b>nhu cầu, mong muốn</b>.' },
+          { t: 'This <b>{{belong to|belongs}}</b> to my brother. → ((*State/Action))', h: 'Động từ chỉ <b>sở hữu</b> (của ai).' },
+          { t: 'Andy <b>{{measure|measures}}</b> people’s feet. → ((State/*Action))', h: 'Andy làm công việc <b>đo</b> chân cho khách: đó là việc anh ấy làm.' },
+          { t: 'Ted <b>collects</b> stamps. → ((State/*Action))', h: 'Sưu tầm tem là việc Ted <b>làm</b>.' },
+          { t: 'Molly <b>{{own|owns}}</b> that book. → ((*State/Action))', h: 'Động từ chỉ <b>sở hữu</b>.' },
+          { t: 'This suitcase <b>{{weigh|weighs}}</b> 18kg. → ((*State/Action))', h: 'Nói về <b>đặc điểm</b> của cái va li (nặng bao nhiêu).' },
+          { t: 'I <b>don’t believe</b> you. → ((*State/Action))', h: 'Động từ chỉ <b>niềm tin, ý kiến</b>.' },
+          { t: 'They <b>weigh</b> all the bags at the airport. → ((State/*Action))', h: 'Ở sân bay, người ta <b>cân</b> túi: đó là việc họ làm.' },
+        ] },
+
+      /* Bài 6 (sách Ex 9) – chọn đơn / tiếp diễn */
+      { id: '9', type: 'list',
+        title: 'Choose the correct option',
+        how: 'Tap the correct option.',
+        examples: [ '((*Do you {{realize}}/Are you realizing)) what time it is?' ],
+        items: [
+          { t: 'Why ((does he taste/*is he tasting)) the soup? Is it OK?', h: 'Anh ấy <b>đang nếm thử</b> (hành động lúc này). Xem mục 4 ô Grammar.' },
+          { t: 'I ((think/*’m thinking)) about learning the guitar.', h: '“think about” = đang cân nhắc trong đầu (hành động).' },
+          { t: 'Look, that {{notice}} ((*says/’s saying)) ‘Please be quiet.’', h: 'Chữ viết trên tấm biển → nghĩa trạng thái.' },
+          { t: 'They ((’re/*’re being)) very noisy! We don’t usually hear them.', h: 'Họ <b>cư xử</b> ồn ào khác thường, chỉ tạm thời (bình thường không vậy).' },
+          { t: 'He ((has/*’s having)) lunch at the moment.', h: '“have lunch” là hành động, đang diễn ra lúc này.' },
+          { t: 'I’m really sorry, but I ((*don’t understand/’m not understanding)).', h: '“understand” là động từ <b>suy nghĩ</b> → trạng thái.' },
+          { t: 'I think we should give him some money. ((*Do you agree/Are you agreeing))?', h: '“agree” chỉ <b>ý kiến</b> → trạng thái.' },
+          { t: 'A square ((*has/’s having)) four sides.', h: '“have” ở đây = có (đặc điểm cố định).' },
+        ] },
+
+      /* Bài 7 (sách Ex 10) – NGHE rồi điền thì + động từ (bỏ động từ cho sẵn) */
+      { id: '10', type: 'text', track: 'u5-ex10',
+        title: 'What’s he doing?',
+        how: 'Listen to the conversation and write the missing words: the verb in the present simple or present continuous. Some gaps need more than one word.',
+        paras: [
+          { t: '<b>A</b> What <span class="exv">are you doing</span>?<br><b>B</b> I [[’m watching|am watching]] that man over there.<br><b>A</b> Oh yes! What [[’s he doing|is he doing]]?<br><b>B</b> I [[don’t know|do not know]].<br><b>A</b> [[Is he digging]]?<br><b>B</b> Yes, and now he [[’s jumping|is jumping]] up and down!',
+            h: ['Việc B <b>đang</b> làm lúc nói.', 'Hỏi việc ông ấy <b>đang</b> làm. Nhớ trật tự câu hỏi (2 từ trở lên).', 'B không có thông tin → câu phủ định, động từ trạng thái.', 'Câu hỏi Yes/No về việc <b>đang</b> diễn ra. Bắt đầu bằng trợ động từ (3 từ).', '“now” → đang diễn ra lúc nói.'] },
+          { t: '<b>A</b> Shall we go and talk to him?<br><b>B</b> That [[depends]]. [[Does he look]] happy?<br><b>A</b> Yes, I [[think]] so.',
+            h: ['Ý: “còn tuỳ”. Động từ trạng thái, chủ ngữ “That”.', 'Hỏi về vẻ ngoài (trông có vẻ…): động từ trạng thái. Câu hỏi 3 từ.', '“… so” = cho rằng (ý kiến) → trạng thái.'] },
+          { t: '<b>B</b> Wait a minute … He [[’s coming|is coming]] this way … He [[wants]] to talk to us … He [[’s holding|is holding]] a box in his hand …<br><b>A</b> I hope it [[contains]] {{treasure}}!',
+            h: ['Ông ấy <b>đang</b> đi về phía này.', 'Chỉ <b>mong muốn</b> → trạng thái, chủ ngữ “He”.', 'Việc ông ấy <b>đang</b> làm với cái hộp.', 'Nói về thứ <b>bên trong</b> hộp → trạng thái, chủ ngữ “it”.'] },
+        ] },
+    ],
+  },
+
+  /* ===================== TUẦN 2 – Unit 1 ===================== */
+  2: {
+    code: 'Unit 1', title: 'Countable and uncountable nouns; articles',
     newWords: ['mud', 'hopes', 'drop of rain', 'matches', 'kindness', 'space', 'slice', 'spoonful', 'block', 'sadness', 'excitement', 'jar', 'energy', 'packet', 'carton', 'pollution', 'torch', 'design', 'style'],
     // Ô Grammar: tóm tắt thật ngắn, ví dụ KHÔNG trùng với câu trong bài tập
     grammar: `
@@ -261,8 +421,8 @@ const LESSONS = {
     ],
   },
 
-  /* ===================== TUẦN 2 – Unit 8 ===================== */
-  2: {
+  /* ===================== TUẦN 3 – Unit 8 ===================== */
+  3: {
     code: 'Unit 8', title: 'The -ing form and the infinitive',
     newWords: ['feel like', 'washing-up', 'worth', 'own', 'promise', 'borrow', 'lie', 'refuse', 'discuss', 'imagine', 'pretend',
       'fancy', 'intend', "can't stand", 'arrange', 'manage', 'fascinating', 'explore', 'expect', 'sights', 'suggest', 'avoid'],

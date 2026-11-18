@@ -23,5 +23,7 @@ Link cho học sinh: https://yumienglish.github.io/PET/
 2. Chép hình vào `img/`, audio đã cắt vào `audio/`.
 3. Đổi `OPEN_WEEK = n`, tăng `?v=` trong `index.html`, rồi push.
 
+Thứ tự hiện tại: tuần 1 = Unit 5, tuần 2 = Unit 1, tuần 3 = Unit 8. Bài làm lưu trên máy học sinh theo **Unit** (`pet-unit5`…), nên đổi thứ tự tuần không làm lẫn bài. Cô xem trước bài chưa mở: `?w=2&preview`.
+
 ## Nộp bài
 Dùng chung máy chủ Code.gs với các trang BTVN (unit `PET`): lần 1 chấm và gửi mail ngay; học sinh làm lại câu sai (có gợi ý), nộp lần 2 → mail so sánh lần 1 / lần 2, thời gian làm bài và số lần rời trang.

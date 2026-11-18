@@ -123,7 +123,14 @@ const WEEK_NO = parseInt(new URLSearchParams(location.search).get('w'), 10);
 const PREVIEW = new URLSearchParams(location.search).has('preview');
 const LESSON = WEEK_NO && (WEEK_NO <= OPEN_WEEK || PREVIEW) ? LESSONS[WEEK_NO] : null;
 const ME_KEY = 'pet-me';
-const storeKey = w => 'pet-w' + w;
+// Bài làm lưu theo Unit (không theo số tuần) để đổi thứ tự tuần không lẫn bài: pet-unit5, pet-unit1…
+const storeKey = w => 'pet-' + String(LESSONS[w].code).toLowerCase().replace(/\s+/g, '');
+// 18/11: Unit 5 chen vào tuần 1 → chuyển bài cũ đã lưu theo tuần (pet-w1 = Unit 1, pet-w2 = Unit 8) sang khoá theo Unit
+[['pet-w1', 'pet-unit1'], ['pet-w2', 'pet-unit8']].forEach(([a, b]) => {
+  const v = lsGet(a); if (!v) return;
+  if (!lsGet(b)) lsSet(b, v);
+  try { localStorage.removeItem(a); } catch (e) {}
+});
 
 // Câu chào trang chủ: mỗi lần mở đổi 1 câu (không lặp lại câu lần trước)
 const HI_LINES = [
@@ -265,7 +272,7 @@ const within = (p, ms = 4000) => Promise.race([p, new Promise((_, rej) => setTim
 async function idbPut(k, v){ const d = await idb(); return new Promise((res, rej) => { const t = d.transaction('rec', 'readwrite'); t.objectStore('rec').put(v, k); t.oncomplete = () => res(); t.onerror = () => rej(t.error); }); }
 async function idbGet(k){ const d = await idb(); return new Promise((res, rej) => { const q = d.transaction('rec').objectStore('rec').get(k); q.onsuccess = () => res(q.result || null); q.onerror = () => rej(q.error); }); }
 const RECBLOB = {};
-const recId = qk => 'w' + WEEK_NO + '-' + qk;
+const recId = qk => String(LESSON.code).toLowerCase().replace(/\s+/g, '') + '-' + qk;
 async function storeRec(qk, blob){ RECBLOB[qk] = blob; try { await within(blob.arrayBuffer().then(buf => idbPut(recId(qk), { buf, type: blob.type }))); } catch (e) {} }
 async function loadRec(qk){
   if (RECBLOB[qk]) return RECBLOB[qk];
@@ -384,7 +391,7 @@ function exHead(e){
     ${e.track ? `<div class="listen"><audio controls preload="none" src="audio/${e.track}.mp3"></audio></div>` : ''}
     <p class="how">${unv(e.how)}</p>
     ${ws.length ? `<div class="words"><span class="wl">📒 New words:</span> ${ws.map(w => vt(`{{${w}}}`)).join(' ')}</div>` : ''}
-    ${e.box && e.type !== 'label' ? `<div class="wordbox">${e.box.map(w => `<span>${vt(w)}</span>`).join('')}</div>` : ''}
+    ${e.box && e.type !== 'label' ? `<div class="wordbox">${e.box.map(w => w.startsWith('~') ? `<span><s>${vt(w.slice(1))}</s></span>` : `<span>${vt(w)}</span>`).join('')}</div>` : ''}
     ${e.img ? `<img class="eximg" src="img/${e.img}" alt="" loading="lazy">` : ''}`;
 }
 // nút ✓/✗ (ý kiến riêng, không chấm điểm)
