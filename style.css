@@ -383,3 +383,19 @@ a.lesson.mission:hover .mthumb{opacity:.7}
 .av:is(img){object-fit:cover}
 span.av.fb{font-size:18px}
 .avb.pic{width:52px;height:52px;border-radius:50%}
+/* Lobby: đầu trang cao hơn để thấy ảnh đấu trường */
+body.home .hero{padding:52px 16px 120px;background-image:linear-gradient(180deg,rgba(10,14,28,.25),rgba(10,14,28,.35) 60%,var(--bg)),url(img/ai/hero.webp),linear-gradient(160deg,#121a3a 0%,#0b1024 55%,#1b0f33 100%);background-position:center 62%}
+body.home main{margin-top:-70px}
+@media (max-width:560px){body.home .hero{padding:40px 16px 96px}}
+@media (max-width:560px){.pl-top{flex-wrap:nowrap;gap:10px}.pl-av .av.big{width:58px;height:58px;font-size:32px}.pl-id{min-width:0}.pl-id h2{font-size:24px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.rk-n{font-size:13px}.pl-rank .emb{width:48px;height:54px}}
+/* hình ChatGPT có nền vuông tối → làm mờ mép cho hoà vào thẻ */
+.embi,.bimg,.rimg,.mthumb-x{-webkit-mask-image:radial-gradient(closest-side,#000 76%,transparent 100%);mask-image:radial-gradient(closest-side,#000 76%,transparent 100%)}
+.bimg.fb,.rimg.fb{-webkit-mask-image:none;mask-image:none}
+.emb:has(.embi){filter:none}
+.pl-rank .emb:has(.embi){width:100px;height:100px;margin-bottom:-6px}
+.bimg{width:78px;height:78px}
+.fxb .bimg{width:70px;height:70px}
+@media (max-width:560px){.pl-rank .emb:has(.embi){width:70px;height:70px}.bimg{width:64px;height:64px}}
+.pl-rank .emb:has(.embi){margin-bottom:8px}
+.lesson.mission .play{position:relative;z-index:2}.lesson.done .play{background:rgba(10,14,28,.82)}
+.coach{-webkit-mask-image:radial-gradient(ellipse closest-side,#000 62%,transparent 100%);mask-image:radial-gradient(ellipse closest-side,#000 62%,transparent 100%);width:150px}

@@ -176,6 +176,7 @@ const starRow = n => [1, 2, 3].map(i => `<span class="${i <= n ? '' : 'off'}">�
 function renderHome(){
   document.title = 'PET Arena ⚡';
   $('#heroSub').textContent = 'Season 1 · Cambridge B1 Preliminary';
+  document.body.classList.add('home');
   $('#app').innerHTML = lobbyHtml();
   afterHome();
 }
