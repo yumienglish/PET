@@ -65,10 +65,24 @@ function toast(html, ms = 4200){
   clearTimeout(toast.tm); toast.tm = setTimeout(() => { t.hidden = true; }, ms);
 }
 
-/* ---------- Avatar: emoji hoặc ảnh trong máy (chỉ lưu trên máy em, không gửi đi) ---------- */
+/* ---------- Hình vẽ bằng ChatGPT (img/ai/<tên>.webp). Chưa có file → dùng giao diện cũ (emoji / CSS) ---------- */
+const AI = 'img/ai/';
+// <img> có dự phòng: lỗi tải → thay bằng chữ / emoji trong data-fb (rỗng = bỏ hình)
+const aiImg = (name, cls, fb = '') => `<img class="${cls}" src="${AI}${name}.webp" alt="" data-fb="${esc(fb)}" onerror="imgFail(this)">`;
+function imgFail(el){
+  const fb = el.dataset.fb, box = el.closest('[data-hide-on-fail]');
+  if (box){ box.remove(); return; }
+  if (fb) el.replaceWith(Object.assign(document.createElement('span'), { className: el.className + ' fb', textContent: fb }));
+  else el.remove();
+}
+
+/* ---------- Avatar: hình vẽ sẵn, emoji hoặc ảnh trong máy (chỉ lưu trên máy em, không gửi đi) ---------- */
+const PIC_AVATARS = Array.from({ length: 16 }, (_, i) => 'pic:' + (i + 1)); // img/ai/av-1…16.webp
 const AVATARS = ['🦊', '🐺', '🦅', '🐉', '🦈', '🐯', '🦁', '🐼', '🦉', '👾', '🤖', '🥷', '😎', '🎮', '🎧', '⚡', '🔥', '🌙', '🛸', '🏀'];
 let AV = '';
-const avHtml = (av, c = 'av') => /^data:image\//.test(av || '') ? `<img class="${c}" src="${av}" alt="">` : `<span class="${c}">${esc(av || '🎮')}</span>`;
+const avHtml = (av, c = 'av') => /^data:image\//.test(av || '') ? `<img class="${c}" src="${av}" alt="">`
+  : /^pic:\d+$/.test(av || '') ? aiImg('av-' + av.slice(4), c, '🎮')
+  : `<span class="${c}">${esc(av || '🎮')}</span>`;
 // ảnh trong máy → cắt vuông, thu nhỏ 160px
 function loadAvatarFile(f, done){
   if (!f || !/^image\//.test(f.type)) return;
@@ -80,7 +94,7 @@ function loadAvatarFile(f, done){
   r.readAsDataURL(f);
 }
 const avPickerHtml = () => `<div class="field"><label>Choose your avatar</label>
-  <div class="avrow"><div id="avPrev" class="avprev"></div><div class="avpick" id="avPick">${AVATARS.map(x => `<button type="button" class="avb" data-av="${x}">${x}</button>`).join('')}<button type="button" class="avb avup" id="avUp" title="Ảnh trong máy">📷</button><input type="file" id="avFile" accept="image/*" hidden></div></div>
+  <div class="avrow"><div id="avPrev" class="avprev"></div><div class="avpick" id="avPick">${PIC_AVATARS.map(x => `<button type="button" class="avb pic" data-av="${x}" data-hide-on-fail>${aiImg('av-' + x.slice(4), 'avimg')}</button>`).join('')}${AVATARS.map(x => `<button type="button" class="avb" data-av="${x}">${x}</button>`).join('')}<button type="button" class="avb avup" id="avUp" title="Ảnh trong máy">📷</button><input type="file" id="avFile" accept="image/*" hidden></div></div>
   <div class="muted small">📷 = chọn ảnh trong máy của em (ảnh chỉ lưu trên máy này)</div></div>`;
 function paintAvPick(){
   $$('#avPick .avb[data-av]').forEach(b => b.classList.toggle('on', b.dataset.av === AV));
@@ -122,7 +136,8 @@ function rankOf(xp){
   const span = (N.x - R.x) / 3, d = Math.min(2, Math.floor((xp - R.x) / span));
   return { i, tier: i * 3 + d, name: R.n, div: ROMAN[d], label: R.n + ' ' + ROMAN[d], c: R.c, next: N, pct: Math.round((xp - R.x) / (N.x - R.x) * 100) };
 }
-const emblem = (rk, big) => `<div class="emb${big ? ' big' : ''}" style="--rc:${rk.c}"><b>${rk.div || '★'}</b></div>`;
+// huy hiệu hạng: hình img/ai/rank-1…7.webp (chưa có → khiên lục giác bằng CSS); bậc III/II/I in đè lên
+const emblem = (rk, big) => `<div class="emb${big ? ' big' : ''}" style="--rc:${rk.c}">${aiImg('rank-' + (rk.i + 1), 'embi')}<b>${rk.div || '★'}</b></div>`;
 
 /* ---------- Số liệu tổng ---------- */
 function gameData(){
@@ -160,11 +175,14 @@ const BADGES = [
   { id: 'gold', icon: '🥇', name: 'Gold Rank', vi: 'Lên hạng Gold', test: d => d.rank.i >= 2 },
 ];
 const earnedBadges = d => BADGES.filter(b => b.test(d)).map(b => b.id);
+// hình huy chương img/ai/badge-1…8.webp theo thứ tự BADGES (chưa có → emoji)
+const badgeIcon = b => aiImg('badge-' + (BADGES.indexOf(b) + 1), 'bimg', b.icon);
+const coachImg = () => aiImg('coach', 'coach');
 function badgesHtml(d){
   const got = earnedBadges(d);
   return `<section class="card ach"><h2 class="sech">🏅 Achievements <span class="cnt">${got.length}/${BADGES.length}</span></h2>
     <div class="bgrid">${BADGES.map(b => { const on = got.includes(b.id);
-      return `<div class="bdg${on ? ' on' : ''}"><span class="bic">${on ? b.icon : '🔒'}</span><b>${b.name}</b><small>${b.vi}</small></div>`; }).join('')}</div></section>`;
+      return `<div class="bdg${on ? ' on' : ''}"><span class="bic">${badgeIcon(b)}${on ? '' : '<i class="blk">🔒</i>'}</span><b>${b.name}</b><small>${b.vi}</small></div>`; }).join('')}</div></section>`;
 }
 function overlay(html){
   const ov = document.createElement('div'); ov.className = 'fxov';
@@ -177,8 +195,8 @@ function checkBadges(){
   const fresh = got.filter(id => !seen.includes(id));
   if (!fresh.length) return false;
   lsSet(BADGE_KEY, seen.concat(fresh));
-  overlay(`<div class="fxt">ACHIEVEMENT UNLOCKED</div>
-    ${fresh.map(id => { const b = BADGES.find(x => x.id === id); return `<div class="fxb"><span class="bic">${b.icon}</span><div><b>${b.name}</b><small>${b.vi}</small></div></div>`; }).join('')}`);
+  overlay(`${coachImg()}<div class="fxt">ACHIEVEMENT UNLOCKED</div>
+    ${fresh.map(id => { const b = BADGES.find(x => x.id === id); return `<div class="fxb"><span class="bic">${badgeIcon(b)}</span><div><b>${b.name}</b><small>${b.vi}</small></div></div>`; }).join('')}`);
   confetti(100); sfx('badge'); return true;
 }
 // Lên hạng / lên bậc → màn chúc mừng
@@ -187,7 +205,7 @@ function checkRank(){
   if (last === null || last === undefined){ lsSet(RANK_KEY, d.rank.tier); if (d.rank.tier === 0) return false; }
   else if (d.rank.tier <= last){ if (d.rank.tier < last) lsSet(RANK_KEY, d.rank.tier); return false; }
   lsSet(RANK_KEY, d.rank.tier);
-  overlay(`<div class="fxt">RANK UP</div>${emblem(d.rank, true)}<div class="fxr" style="color:${d.rank.c}">${d.rank.label}</div>
+  overlay(`${coachImg()}<div class="fxt">RANK UP</div>${emblem(d.rank, true)}<div class="fxr" style="color:${d.rank.c}">${d.rank.label}</div>
     <p class="muted">${d.xp} XP${d.rank.next ? ` · còn ${d.rank.next.x - d.xp} XP nữa lên ${d.rank.next.n}` : ' · hạng cao nhất!'}</p>`);
   confetti(160); sfx('rank'); return true;
 }
@@ -205,7 +223,7 @@ function lobbyHtml(){
       : s.startedAt ? '<span class="tag">⏳ In progress</span>' : '<span class="tag new">NEW</span>';
     const btn = s.phase === 'done' ? 'REVIEW' : s.phase === 'retry' || s.phase === 'review' ? 'FIX ✏️' : s.startedAt ? 'CONTINUE ▶' : 'PLAY ▶';
     return `<a class="card lesson mission${s.phase === 'done' ? ' done' : ''}${w === OPEN_WEEK ? ' now' : ''}" href="?w=${w}">
-      <div class="lnum">${two(w)}</div>
+      ${aiImg('mission-' + String(L.code).toLowerCase().replace(/\s+/g, ''), 'mthumb')}<div class="lnum">${two(w)}</div>
       <div class="linfo"><div class="lt">MISSION ${two(w)} · ${esc(L.code)}${w === OPEN_WEEK ? ' · <b class="nowtag">THIS WEEK</b>' : ''}</div>
         <div class="ln">${esc(L.title)}</div><div class="ls">${st}</div></div>
       <span class="play">${btn}</span></a>`;
@@ -241,7 +259,7 @@ function afterHome(){
 /* ---------- Word Rush: 10 từ / 60 giây ---------- */
 function rushCard(d){
   const ok = d.pool.length >= 4;
-  return `<section class="card rush${ok ? '' : ' off'}"><div class="rush-ic">⚡</div>
+  return `<section class="card rush${ok ? '' : ' off'}"><div class="rush-ic">${aiImg('word-rush', 'rimg', '⚡')}</div>
     <div class="rush-t"><b>WORD RUSH</b><span>${ok ? `${Math.min(10, d.pool.length)} words · 60 seconds · +2 XP mỗi câu đúng` : 'Hoàn thành 1 mission để mở khoá Word Rush.'}</span>
     ${d.rush.plays ? `<small>Best ${d.rush.best}/10 · Played ${d.rush.plays}×</small>` : ''}</div>
     <button class="btn" id="rushBtn" type="button"${ok ? '' : ' disabled'}>PLAY ▶</button></section>`;
@@ -295,7 +313,7 @@ function startRush(){
     r.plays++; r.best = Math.max(r.best, Q.length >= 10 ? G.score : 0); r.xp = (r.xp || 0) + gain; r.days = { [t]: n + 1 };
     lsSet(RUSH_KEY, r);
     const pct = G.score / Q.length;
-    body.innerHTML = `<div class="gend"><div class="gbig">${G.score} / ${Q.length}</div>
+    body.innerHTML = `<div class="gend">${pct >= .7 ? coachImg() : ''}<div class="gbig">${G.score} / ${Q.length}</div>
       <p class="gmsg">${pct === 1 ? 'Flawless run! 💎' : pct >= .7 ? 'Nice run, keep grinding! 💪' : 'GG. Chơi lại để nhớ từ lâu hơn 🔁'}</p>
       <p class="muted small">${gain ? `+${gain} XP` : 'Hôm nay em đã nhận đủ XP Word Rush (3 lượt). Vẫn chơi tiếp để nhớ từ nhé!'}</p>
       <div class="gbtns"><button class="btn" type="button" id="gAgain">PLAY AGAIN 🔁</button><button class="btn ghost" type="button" id="gClose">LOBBY</button></div></div>`;
