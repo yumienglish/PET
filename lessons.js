@@ -1,5 +1,5 @@
 /* =====================================================================
-   PET Adventure – DỮ LIỆU BÀI HỌC (sách Oxford Grammar for Schools 5)
+   PET Arena – DỮ LIỆU BÀI HỌC (sách Oxford Grammar for Schools 5)
    ---------------------------------------------------------------------
    • OPEN_WEEK: tuần đang mở. Mỗi tuần thêm 1 bài vào LESSONS rồi tăng số này.
      Các bài tuần trước vẫn mở để học sinh xem lại.
@@ -326,8 +326,8 @@ const LESSONS = {
             { l: 'a', t: '[[N:lorry/lorries=3]]' }, { l: 'b', t: '[[N:bus/buses=2]]' },
             { l: 'c', t: '[[N:car/cars=1]]' }, { l: 'd', t: '[[N:motorbike/motorbikes=1]]' } ] },
           { n: '3', img: 'u1-ex2-3.jpg', head: '[[weather]]', h: 'Dòng số là <b>chủ đề</b> của cả tranh. Trời đang mưa → chọn từ chung trong khung.', rows: [
-            { l: 'a', t: '[[N:umbrella/umbrellas=1]]' }, { l: 'b', t: '[[N:raincoat/raincoats=4]]' },
-            { l: 'c', t: '[[N:puddle/puddles=2]]' }, { l: 'd', t: '[[N:drop of rain/drops of rain=1]]' } ] },
+            { l: 'a', t: '[[N:umbrella/umbrellas=1|3]]' }, { l: 'b', t: '[[N:raincoat/raincoats=4]]' },
+            { l: 'c', t: '[[N:puddle/puddles=2|3]]' }, { l: 'd', t: '[[N:drop of rain/drops of rain=1]]' } ] },
           { n: '4', img: 'u1-ex2-4.jpg', head: '[[people]]', h: 'Dòng số là <b>chủ đề</b> của cả tranh. Tranh có đàn ông, phụ nữ, trẻ em → chọn từ chung trong khung.', rows: [
             { l: 'a', t: '[[N:man/men=2]]' }, { l: 'b', t: '[[N:boy/boys=1]]' },
             { l: 'c', t: '[[N:girl/girls=1]]' }, { l: 'd', t: '[[N:woman/women=2]]' } ] },

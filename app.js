@@ -1,4 +1,4 @@
-/* PET Adventure – giao diện, chấm điểm, làm lại câu sai, gửi bài */
+/* PET Arena – giao diện, chấm điểm, làm lại câu sai, gửi bài (phần game ở arena.js) */
 'use strict';
 
 /* ============ TIỆN ÍCH ============ */
@@ -146,16 +146,16 @@ const storeKey = w => 'pet-' + String(LESSONS[w].code).toLowerCase().replace(/\s
 
 // Câu chào trang chủ: mỗi lần mở đổi 1 câu (không lặp lại câu lần trước)
 const HI_LINES = [
-  'Every new word is a new superpower. 💪',
-  'Your brain loves new words. Let’s feed it! 🧠',
-  'Small steps every week = BIG English! 🚀',
-  'Mistakes mean you’re trying. Keep going! 🌱',
-  'You’re getting better every single week. 📈',
-  'Ready for a new adventure? Let’s go! 🎒',
-  'Today’s you is smarter than yesterday’s you. ✨',
-  'Grammar is your secret map. Let’s explore! 🗺️',
-  'Curious minds go far. Let’s explore! 🔭',
-  'One more step towards your PET star. ⭐',
+  'New week, new mission. Lock in. 🎧',
+  'Every mission = more XP. Keep grinding. ⚡',
+  'Ranks are earned, not given. 🏆',
+  'Mistakes are just practice rounds. 🔁',
+  'One mission a week. Consistency wins. 📈',
+  'Your future self says thanks. 😎',
+  'Main character energy only. ✨',
+  'Grammar is the cheat code. Use it. 🎮',
+  'Small wins every week = big rank later. 💎',
+  'Next stop: PET. Let’s go. 🚀',
 ];
 function hiLine(){
   let last = lsGet('pet-hi'), i;
@@ -172,38 +172,12 @@ function starsOf(s){
 }
 const starRow = n => [1, 2, 3].map(i => `<span class="${i <= n ? '' : 'off'}">⭐</span>`).join('');
 
+// Trang chủ = sảnh chính kiểu game (arena.js): thẻ người chơi + rank, missions, Word Rush, thành tựu
 function renderHome(){
-  document.title = 'PET Adventure 🚀';
-  $('#heroSub').textContent = 'Explore · Practise · Level up · Shine ✨';
-  const weeks = Object.keys(LESSONS).map(Number).filter(w => w <= OPEN_WEEK).sort((a, b) => b - a);
-  const next = LESSONS[OPEN_WEEK + 1];
-  const me = lsGet(ME_KEY) || {};
-  const first = String(me.name || '').trim().split(/\s+/).pop();
-  let stars = 0, words = 0;
-  weeks.forEach(w => { const n = starsOf(lsGet(storeKey(w))); stars += n; if (n) words += (LESSONS[w].newWords || []).length; });
-  $('#app').innerHTML = `<section class="card hi">
-      <h2>Hi ${first ? esc(first) : 'superstar'}! 🌟</h2>
-      <p class="hiline">${hiLine()}</p>
-      <div class="stats">
-        <div class="stat"><b>⭐ ${stars}</b><span>stars</span></div>
-        <div class="stat"><b>📒 ${words}</b><span>new words</span></div>
-        <div class="stat"><b>🏁 ${weeks.filter(w => starsOf(lsGet(storeKey(w)))).length}</b><span>adventures</span></div>
-      </div>
-      ${stars ? '' : '<p class="muted small" style="margin:10px 0 0">Your first stars are waiting for you! ⭐</p>'}
-    </section>
-    ${weeks.map(w => {
-      const L = LESSONS[w], s = lsGet(storeKey(w)) || {};
-      const r = s.r2 || s.r1;
-      const st = s.phase === 'done' ? `<span class="tag ok stars">${starRow(starsOf(s))}${r ? ' ' + r.score + '/' + r.total : ''}</span>`
-        : s.phase === 'retry' || s.phase === 'review' ? '<span class="tag warn">✏️ Làm lại câu sai</span>'
-        : s.startedAt ? '<span class="tag">⏳ In progress</span>' : '<span class="tag new">🆕 New</span>';
-      return `<a class="card lesson" href="?w=${w}">
-        <div class="lnum">${w}</div>
-        <div class="linfo"><div class="lt">Week ${w}${w === OPEN_WEEK ? ' · <b class="now">This week</b>' : ''}</div>
-          <div class="ln">${esc(L.code)} · ${esc(L.title)}</div></div>
-        <div>${st}</div></a>`;
-    }).join('')}
-    ${next ? `<div class="card lesson locked"><div class="lnum">🔒</div><div class="linfo"><div class="lt">Week ${OPEN_WEEK + 1}</div><div class="ln">Next adventure unlocks soon!</div></div></div>` : ''}`;
+  document.title = 'PET Arena ⚡';
+  $('#heroSub').textContent = 'Season 1 · Cambridge B1 Preliminary';
+  $('#app').innerHTML = lobbyHtml();
+  afterHome();
 }
 
 /* ============ DANH SÁCH CÂU HỎI ============ */
@@ -447,18 +421,20 @@ function exLabel(e){
 }
 
 function buildLesson(){
-  document.title = 'PET ' + LESSON.code + ' · ' + LESSON.title;
-  $('#heroSub').textContent = `Week ${WEEK_NO} · ${LESSON.code}: ${LESSON.title}`;
+  document.title = `Mission ${String(WEEK_NO).padStart(2, '0')} · ${LESSON.title} – PET Arena`;
+  $('#heroSub').textContent = `MISSION ${String(WEEK_NO).padStart(2, '0')} · ${LESSON.code}: ${LESSON.title}`;
   buildQS(); buildRecs();
   const allWords = (LESSON.newWords || []).filter(k => VOCAB[k]);
   $('#app').innerHTML = `
     <section class="card start" id="start">
-      <h2>👋 Hi! What’s your name?</h2>
-      <p class="muted" style="margin:0">Điền tên và lớp rồi bấm <b>Start</b>.</p>
+      <div class="pl-tag">PLAYER SETUP</div>
+      <h2>Who’s playing? 🎮</h2>
+      <p class="muted" style="margin:0">Điền tên, lớp, chọn avatar rồi bấm <b>Start</b>.</p>
       <div class="field"><label for="inName">Full name</label><input id="inName" autocomplete="name" placeholder="e.g. Nguyễn Minh Anh"></div>
       <div class="field"><label for="inCls">Class</label><input id="inCls" placeholder="e.g. PET01"></div>
+      ${avPickerHtml()}
       <div class="err" id="startErr"></div>
-      <button class="btn" id="startBtn" type="button">Start →</button>
+      <button class="btn" id="startBtn" type="button">START MISSION ▶</button>
     </section>
     <div id="work" hidden>
       <div class="topbar" id="topbar" hidden></div>
@@ -507,10 +483,11 @@ function buildLesson(){
     if (q.tok.need <= 1) cur = cur[0] === i ? [] : [i];
     else if (cur.includes(i)) cur = cur.filter(x => x !== i);
     else { cur.push(i); if (cur.length > q.tok.need) cur.shift(); }
-    S.a[k] = cur; save(); paintChoices(); progress(); if (S.phase === 'retry') topProgress();
+    S.a[k] = cur; save(); paintChoices(); sfx('tick'); progress(); if (S.phase === 'retry') topProgress();
   });
   const me = lsGet(ME_KEY) || {};
   $('#inName').value = S.name || me.name || ''; $('#inCls').value = S.cls || me.cls || '';
+  bindAvPicker(me);
   $('#startBtn').addEventListener('click', onStart);
   ['inName', 'inCls'].forEach(id => $('#' + id).addEventListener('keydown', e => { if (e.key === 'Enter') onStart(); }));
 }
@@ -523,12 +500,12 @@ function onStart(){
   $('#startErr').textContent = '';
   S.name = n.slice(0, 80); S.cls = c.slice(0, 30);
   if (!S.startedAt) S.startedAt = new Date().toISOString();
-  save(); lsSet(ME_KEY, { name: S.name, cls: S.cls });
-  showWork(); window.scrollTo({ top: 0 });
+  save(); lsSet(ME_KEY, { name: S.name, cls: S.cls, av: AV });
+  sfx('pop'); showWork(); window.scrollTo({ top: 0 });
 }
 function renderWho(){
   const when = S.phase === 'done' ? (S.r2 || S.r1).at : null;
-  $('#whoBar').innerHTML = `<span>👤 <b>${esc(S.name)}</b> · Class <b>${esc(S.cls)}</b></span>` +
+  $('#whoBar').innerHTML = `<span class="whoname">${avHtml(AV || (lsGet(ME_KEY) || {}).av)} <b>${esc(S.name)}</b> · Class <b>${esc(S.cls)}</b></span>` +
     (when ? `<span class="muted small">Submitted ${new Date(when).toLocaleString('vi-VN')}</span>`
       : S.phase === 'work' ? '<button class="linkbtn" type="button" id="editName">Sửa tên / lớp</button>' : '');
   const b = $('#editName'); if (b) b.onclick = () => { $('#work').hidden = true; $('#bar').hidden = true; $('#start').hidden = false; $('#inName').focus(); };
@@ -703,14 +680,17 @@ function renderSummary(){
     // sau lần 1: chỉ meme + điểm
     box.innerHTML = `<div class="card summary retry">${memeOf(S.r1)}
       <div class="sumr"><div class="score">${S.r1.score}<span>/${S.r1.total}</span></div>
+      ${teaseLine1()}
       <div class="status" id="sendStatus"></div></div></div>`;
     updateStatus();
     return;
   }
-  // xong: điểm + cô đã nhận bài + Let's review (đúng hết ngay lần 1 thì vẫn có meme)
+  // xong: điểm + XP + câu khen + cô đã nhận bài + Let's review (đúng hết ngay lần 1 thì vẫn có meme)
   const R = S.r2 || S.r1;
   box.innerHTML = `<div class="card summary">${S.r2 ? '' : memeOf(S.r1)}
     <div class="sumr"><div class="score">${R.score}<span>/${R.total}</span></div>
+    ${S.r2 ? praiseLine2() : teaseLine1()}
+    ${xpLine()}
     <div class="status" id="sendStatus"></div>
     ${R.score < R.total ? '<div class="big">Let’s review the answers below 👇</div>' : ''}</div></div>`;
   updateStatus();
@@ -742,12 +722,14 @@ function modal(msg, yes, no){
 async function guard1(left, total){
   if (modalOpen()) return false;
   if (left > total * MAX_EMPTY){
-    await modal(`📝 Em mới làm <b>${total - left}/${total}</b> câu.<br>Em làm tiếp rồi mới nộp bài nhé! 💪`, '', 'OK, em làm tiếp');
+    sfx('bad');
+    await modal(`📝 ${tease('empty', { x: total - left, n: total, e: left })}`, '', 'Dạ, em làm tiếp 😅');
     return false;
   }
   const mins = S.startedAt ? (Date.now() - new Date(S.startedAt)) / 60000 : MIN_MINUTES;
   if (mins < MIN_MINUTES){
-    await modal(`🎧 Em làm nhanh quá!<br>Kiểm tra lại bài thêm <b>${Math.ceil(MIN_MINUTES - mins)} phút</b> nữa rồi mới nộp được nhé.`, '', 'OK, em kiểm tra lại');
+    sfx('bad');
+    await modal(`⏱️ ${tease('early', { m: Math.max(1, Math.floor(mins)), n: total, r: Math.ceil(MIN_MINUTES - mins) })}`, '', 'Dạ, em soát lại 🧐');
     return false;
   }
   const go = await modal(left ? `Em còn <b>${left} câu</b> chưa làm.<br>Em chắc chắn muốn nộp bài cho cô?` : 'Em đã kiểm tra kĩ chưa?<br>Nộp bài cho cô nhé?', 'Nộp bài', 'Làm tiếp ✏️');
@@ -757,7 +739,7 @@ async function guard1(left, total){
 async function guard2(){
   if (modalOpen()) return false;
   const w = wrongKeys().length, c = fixedCount();
-  if (!c){ await modal('✏️ Em chưa sửa câu nào.<br>Sửa các câu sai rồi mới nộp lần 2 nhé!', '', 'OK, em sửa bài'); return false; }
+  if (!c){ sfx('bad'); await modal(`✏️ ${tease('nofix')}<br><small>Sửa các câu sai rồi mới nộp lần 2 nhé!</small>`, '', 'Dạ, em sửa bài 😅'); return false; }
   const go = await modal(`Em đã sửa <b>${c}/${w}</b> câu sai.<br>Nộp lần 2 cho cô nhé? Nộp xong sẽ hiện đáp án, không sửa được nữa.`, 'Nộp lần 2', 'Sửa tiếp ✏️');
   return go && S.phase === 'retry';
 }
@@ -795,7 +777,7 @@ async function onSubmit(){
     S.sid = makeSid();
     S.phase = g.score === g.total ? 'done' : 'review';
     save(); paintAll(); window.scrollTo({ top: 0, behavior: 'smooth' });
-    send();
+    send(); afterSubmit();
     return;
   }
   if (S.phase === 'retry'){
@@ -806,7 +788,7 @@ async function onSubmit(){
     const ks = Object.keys(g.items);
     S.r2 = { at: new Date().toISOString(), leaves: S.leaves || 0, score: ks.filter(k => g.items[k].ok).length, total: ks.length, items: g.items };
     S.phase = 'done'; save(); paintAll(); window.scrollTo({ top: 0, behavior: 'smooth' });
-    send();
+    send(); afterSubmit();
   }
 }
 
@@ -906,16 +888,21 @@ let away = false, muteAway = false;
 function releaseAway(){ setTimeout(() => { muteAway = false; away = false; }, 800); }
 const tracking = () => S && !!S.startedAt && (S.phase === 'work' || S.phase === 'retry') && $('#work') && !$('#work').hidden;
 function goAway(){ if (muteAway || away || REC || !tracking()) return; away = true; S.leaves = (S.leaves || 0) + 1; save(); }
-function comeBack(){ if (!document.hidden && document.hasFocus()) away = false; }
+function comeBack(){
+  if (document.hidden || !document.hasFocus()) return;
+  const was = away; away = false;
+  if (was && tracking() && (S.leaves || 0) > 5) toast(`🕵️ ${tease('away')} <small>(rời trang ${S.leaves} lần)</small>`);
+}
 document.addEventListener('visibilitychange', () => document.hidden ? goAway() : comeBack());
 window.addEventListener('blur', goAway);
 window.addEventListener('focus', comeBack);
 
 /* ============ KHỞI ĐỘNG ============ */
 (function boot(){
+  initArena();
   if (!LESSON){
     $('#bar').hidden = true;
-    if (WEEK_NO) { $('#app').innerHTML = '<div class="card">🔒 Bài này chưa mở. <a href="./">← Quay lại danh sách bài</a></div>'; return; }
+    if (WEEK_NO) { $('#app').innerHTML = '<div class="card">🔒 Mission này chưa mở. <a href="./">← Về Lobby</a></div>'; return; }
     renderHome(); return;
   }
   $('#back').hidden = false;
