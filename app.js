@@ -595,16 +595,20 @@ function renderTop(){
     tb.innerHTML = `<div class="tt">Lần 1: ${S.r1.score}/${S.r1.total} · ❌ Sai ${wrongKeys().length} câu</div><button class="btn orange" type="button" id="retryBtn">✏️ Làm lại câu sai</button>`;
     $('#retryBtn').onclick = startRetry;
   } else {
-    tb.innerHTML = `<div class="tt" id="topT"></div><button class="btn orange" type="button" id="submit2Btn">Nộp lần 2 ✔</button>`;
+    // nút nộp lần 2 đặt bên TRÁI (khác chỗ nút "Làm lại câu sai" vừa bấm bên phải)
+    tb.innerHTML = `<button class="btn orange" type="button" id="submit2Btn">Nộp lần 2 ✔</button><div class="tt" id="topT"></div>`;
     $('#submit2Btn').onclick = onSubmit;
     topProgress();
   }
 }
 function topProgress(){
   const el = $('#topT'); if (!el) return;
-  const w = wrongKeys(), fixed = w.filter(k => !sameAns(k)).length;
+  const w = wrongKeys(), fixed = fixedCount();
   el.textContent = `✏️ Đã sửa ${fixed}/${w.length} câu`;
+  const b = $('#submit2Btn'); if (b) b.classList.toggle('dim', !fixed); // chưa sửa câu nào: nút mờ
 }
+// số câu sai em đã sửa (khác câu trả lời lần 1)
+function fixedCount(){ return wrongKeys().filter(k => !sameAns(k)).length; }
 function startRetry(){
   S.phase = 'retry'; S.retryAt = new Date().toISOString(); save();
   paintAll(); window.scrollTo({ top: 0 });
@@ -701,6 +705,66 @@ function renderSummary(){
 }
 function paintAll(){ paintMarks(); paintChoices(); paintTicks(); paintRec(); focusWrong(S.phase === 'retry'); renderTop(); renderSummary(); renderWho(); progress(); }
 
+/* ============ CHỐNG NỘP NHẦM + LINK LÀM LẠI CỦA CÔ ============ */
+// Còn trống quá tỉ lệ này thì không cho nộp lần 1; làm chưa đủ số phút này thì chưa cho nộp.
+const MAX_EMPTY = 0.25;
+const MIN_MINUTES = 3;
+// Link cho em làm lại 1 bài đã nộp: link bài đó + &lamlai=yumi-lamlai (mở trên đúng máy em đã làm).
+// Mỗi mã chỉ dùng 1 lần trên mỗi máy; cần làm lại lần nữa thì thêm số: yumi-lamlai2, yumi-lamlai3…
+const RESET_CODE = 'yumi-lamlai';
+const modalOpen = () => { const m = $('#modal'); return !!m && !m.hidden; };
+// Hộp xác nhận trên trang (thay confirm của trình duyệt). yes = nút phụ (Nộp), no = nút chính (Làm tiếp). Không có yes = chỉ thông báo.
+function modal(msg, yes, no){
+  if (!$('#modal')) document.body.insertAdjacentHTML('beforeend', '<div class="modal" id="modal" hidden><div class="mbox" role="dialog" aria-modal="true"><div class="mmsg" id="mMsg"></div><div class="mbtns"><button class="btn ghost" type="button" id="mYes"></button><button class="btn" type="button" id="mNo"></button></div></div></div>');
+  return new Promise(res => {
+    const m = $('#modal'), y = $('#mYes'), n = $('#mNo');
+    $('#mMsg').innerHTML = msg;
+    y.hidden = !yes; y.textContent = yes || ''; n.textContent = no;
+    y.disabled = true; setTimeout(() => { y.disabled = false; }, 900); // chạm 2 lần liên tiếp không nộp được
+    const done = v => { m.hidden = true; y.onclick = n.onclick = null; res(v); };
+    y.onclick = () => done(true); n.onclick = () => done(false);
+    m.hidden = false; n.focus();
+  });
+}
+// Lần 1: chặn khi làm quá ít / quá nhanh, rồi hỏi lại
+async function guard1(left, total){
+  if (modalOpen()) return false;
+  if (left > total * MAX_EMPTY){
+    await modal(`📝 Em mới làm <b>${total - left}/${total}</b> câu.<br>Em làm tiếp rồi mới nộp bài nhé! 💪`, '', 'OK, em làm tiếp');
+    return false;
+  }
+  const mins = S.startedAt ? (Date.now() - new Date(S.startedAt)) / 60000 : MIN_MINUTES;
+  if (mins < MIN_MINUTES){
+    await modal(`🎧 Em làm nhanh quá!<br>Kiểm tra lại bài thêm <b>${Math.ceil(MIN_MINUTES - mins)} phút</b> nữa rồi mới nộp được nhé.`, '', 'OK, em kiểm tra lại');
+    return false;
+  }
+  const go = await modal(left ? `Em còn <b>${left} câu</b> chưa làm.<br>Em chắc chắn muốn nộp bài cho cô?` : 'Em đã kiểm tra kĩ chưa?<br>Nộp bài cho cô nhé?', 'Nộp bài', 'Làm tiếp ✏️');
+  return go && S.phase === 'work';
+}
+// Lần 2: phải sửa ít nhất 1 câu sai
+async function guard2(){
+  if (modalOpen()) return false;
+  const w = wrongKeys().length, c = fixedCount();
+  if (!c){ await modal('✏️ Em chưa sửa câu nào.<br>Sửa các câu sai rồi mới nộp lần 2 nhé!', '', 'OK, em sửa bài'); return false; }
+  const go = await modal(`Em đã sửa <b>${c}/${w}</b> câu sai.<br>Nộp lần 2 cho cô nhé? Nộp xong sẽ hiện đáp án, không sửa được nữa.`, 'Nộp lần 2', 'Sửa tiếp ✏️');
+  return go && S.phase === 'retry';
+}
+// ?lamlai=MÃ: xoá bài đã nộp (giữ tên, lớp) của bài đang mở. Trả về true nếu vừa xoá.
+function applyRedo(key){
+  let qp; try { qp = new URLSearchParams(location.search); } catch (e) { return false; }
+  const tok = qp.get('lamlai'); if (tok === null) return false;
+  qp.delete('lamlai');
+  try { history.replaceState(null, '', location.pathname + (qp.toString() ? '?' + qp : '') + location.hash); } catch (e) {} // tải lại trang không xoá nữa
+  if (!tok.startsWith(RESET_CODE) || !S.r1) return false;
+  const UK = 'lamlai-used', id = key + ':' + tok, got = lsGet(UK), used = Array.isArray(got) ? got : [];
+  if (used.includes(id)) return false;
+  used.push(id); lsSet(UK, used);
+  S = Object.assign(blank(), { name: S.name, cls: S.cls, redo: (S.redo || 0) + 1 });
+  save(); return true;
+}
+const redoTitle = () => S.redo ? ' – LÀM LẠI' + (S.redo > 1 ? ' lần ' + S.redo : '') : '';
+const REDO_MSG = '<div class="okmsg">✅ Cô đã cho em làm lại bài. Bấm <b>Start</b> để bắt đầu nhé!</div>';
+
 /* ============ NỘP BÀI ============ */
 async function onSubmit(){
   if (REC){ alert('Em đang ghi âm. Bấm ⏹ Stop trước nhé.'); return; }
@@ -713,9 +777,7 @@ async function onSubmit(){
     }
     const left = QS.filter(q => !answered(q)).length;
     stopAllAudio();
-    muteAway = true;
-    const go = confirm(left ? `Còn ${left} câu chưa làm. Nộp luôn?` : 'Nộp bài nhé?');
-    releaseAway(); if (!go) return;
+    if (!(await guard1(left, QS.length))) return;
     const g = gradeNow(), at = new Date().toISOString();
     S.r1 = { at, leaves: S.leaves || 0, score: g.score, total: g.total, items: g.items };
     S.sid = makeSid();
@@ -725,9 +787,7 @@ async function onSubmit(){
     return;
   }
   if (S.phase === 'retry'){
-    muteAway = true;
-    const go = confirm('Nộp lần 2? Nộp xong sẽ hiện đáp án.');
-    releaseAway(); if (!go) return;
+    if (!(await guard2())) return;
     const g = gradeNow();
     // câu đúng ở lần 1 giữ nguyên kết quả
     Object.keys(S.r1.items).forEach(k => { if (S.r1.items[k].ok) g.items[k] = S.r1.items[k]; });
@@ -755,7 +815,7 @@ const secsBetween = (a, b) => a && b ? Math.max(0, Math.round((new Date(b) - new
 
 // Giống các trang BTVN khác: lần 1 gửi ngay; lần 2 gửi kèm kết quả lần 1 để mail so sánh 2 lần.
 const makeSid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
-const base = () => ({ app: 'btvn', unit: 'PET', title: `PET ${LESSON.code} ${LESSON.title} – Week ${WEEK_NO}`, name: S.name, cls: S.cls, sid: S.sid || '' });
+const base = () => ({ app: 'btvn', unit: 'PET', title: `PET ${LESSON.code} ${LESSON.title} – Week ${WEEK_NO}` + redoTitle(), name: S.name, cls: S.cls, sid: S.sid || '', redo: S.redo || 0 });
 // withRec: mail lần 1 có thêm các dòng ghi âm (cô chấm, file đính kèm); mail lần 2 chỉ so sánh câu chấm điểm
 function itemsOf(R, withRec){
   const out = [];
@@ -848,7 +908,9 @@ window.addEventListener('focus', comeBack);
   }
   $('#back').hidden = false;
   S = Object.assign(blank(), lsGet(storeKey(WEEK_NO)) || {});
+  const redone = applyRedo(storeKey(WEEK_NO)); // mở link làm lại của cô
   buildLesson();
+  if (redone) $('#startErr').insertAdjacentHTML('beforebegin', REDO_MSG);
   $('#submitBtn').addEventListener('click', onSubmit);
   if (S.startedAt && S.name) showWork();
   paintAll();
