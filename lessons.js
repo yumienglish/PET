@@ -10,7 +10,7 @@
        ((a/*b))          chọn 1 – dấu * đánh dấu đáp án đúng
        ((*a/*b/c))       chọn 2 (số dấu * = số lựa chọn phải chọn)
        [[some]]          ô gõ chữ, nhiều đáp án đúng thì ngăn bằng |
-       [[N:shelf/shelves]] ô gõ "a/an + số ít" hoặc "số đếm + số nhiều"
+       [[N:shelf/shelves]]   ô gõ "a/an + số ít" hoặc "số đếm + số nhiều" · [[N:shelf/shelves=3]] = phải đúng số lượng trong tranh (=2|3: nhiều số đều đúng)
    • h: gợi ý ngữ pháp, chỉ hiện khi làm lại câu sai (KHÔNG ghi đáp án).
      Câu có nhiều chỗ trống thì h là mảng, theo thứ tự chỗ trống.
    ===================================================================== */
@@ -315,22 +315,22 @@ const LESSONS = {
       /* Exercise 2 – ghi tên tranh */
       { id: '2', type: 'label', page: 'p.7',
         title: 'Label the pictures',
-        how: 'Label the pictures with the words in the box. Use <b>a</b>, <b>an</b> or a number with the countable nouns. Use a plural form where necessary. Numbers 1–4 are topics.',
+        how: 'Label the pictures with the words in the box. Use <b>a</b>, <b>an</b> or a number with the countable nouns. Count the things in each picture. Use a plural form where necessary. Numbers 1–4 are topics.',
         box: ['bus', 'car', '~chair', 'boy', '{{drop of rain}}', '~{{furniture}}', 'people', '{{lorry}}', 'man', 'motorbike',
           '{{puddle}}', 'girl', 'weather', 'raincoat', 'sofa', '{{shelf}}', '~table', 'transport', 'umbrella', 'woman'],
         groups: [
           { n: '1', img: 'u1-ex2-1.jpg', head: 'furniture', rows: [
             { l: 'a', ex: 'a table' }, { l: 'b', ex: 'two chairs' },
-            { l: 'c', t: '[[N:shelf/shelves]]' }, { l: 'd', t: '[[N:sofa/sofas]]' } ] },
+            { l: 'c', t: '[[N:shelf/shelves=3]]' }, { l: 'd', t: '[[N:sofa/sofas=1]]' } ] },
           { n: '2', img: 'u1-ex2-2.jpg', head: '[[transport]]', h: 'Dòng số là <b>chủ đề</b> của cả tranh (giống “furniture” ở tranh 1). Tranh này có xe buýt, xe tải, ô tô… → chọn từ chung trong khung.', rows: [
-            { l: 'a', t: '[[N:lorry/lorries]]' }, { l: 'b', t: '[[N:bus/buses]]' },
-            { l: 'c', t: '[[N:car/cars]]' }, { l: 'd', t: '[[N:motorbike/motorbikes]]' } ] },
+            { l: 'a', t: '[[N:lorry/lorries=3]]' }, { l: 'b', t: '[[N:bus/buses=2]]' },
+            { l: 'c', t: '[[N:car/cars=1]]' }, { l: 'd', t: '[[N:motorbike/motorbikes=1]]' } ] },
           { n: '3', img: 'u1-ex2-3.jpg', head: '[[weather]]', h: 'Dòng số là <b>chủ đề</b> của cả tranh. Trời đang mưa → chọn từ chung trong khung.', rows: [
-            { l: 'a', t: '[[N:umbrella/umbrellas]]' }, { l: 'b', t: '[[N:raincoat/raincoats]]' },
-            { l: 'c', t: '[[N:puddle/puddles]]' }, { l: 'd', t: '[[N:drop of rain/drops of rain]]' } ] },
+            { l: 'a', t: '[[N:umbrella/umbrellas=1]]' }, { l: 'b', t: '[[N:raincoat/raincoats=4]]' },
+            { l: 'c', t: '[[N:puddle/puddles=2]]' }, { l: 'd', t: '[[N:drop of rain/drops of rain=1]]' } ] },
           { n: '4', img: 'u1-ex2-4.jpg', head: '[[people]]', h: 'Dòng số là <b>chủ đề</b> của cả tranh. Tranh có đàn ông, phụ nữ, trẻ em → chọn từ chung trong khung.', rows: [
-            { l: 'a', t: '[[N:man/men]]' }, { l: 'b', t: '[[N:boy/boys]]' },
-            { l: 'c', t: '[[N:girl/girls]]' }, { l: 'd', t: '[[N:woman/women]]' } ] },
+            { l: 'a', t: '[[N:man/men=2]]' }, { l: 'b', t: '[[N:boy/boys=1]]' },
+            { l: 'c', t: '[[N:girl/girls=1]]' }, { l: 'd', t: '[[N:woman/women=2]]' } ] },
         ] },
 
       /* Exercise 4 – chọn đáp án đúng (KHÔNG nghe để kiểm tra) */

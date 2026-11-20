@@ -70,7 +70,12 @@ function parseTok(m){
     return { kind: 'ch', opts, correct, need: correct.length };
   }
   const g = m[2].trim();
-  if (g.startsWith('N:')){ const [sg, pl] = g.slice(2).split('/').map(x => x.trim()); return { kind: 'noun', sg, pl }; }
+  // [[N:shelf/shelves]] = a/an + số ít hoặc số + số nhiều · [[N:shelf/shelves=3]] = phải đúng số lượng trong tranh (=2|3: nhiều số đều đúng)
+  if (g.startsWith('N:')){
+    const [form, cnt] = g.slice(2).split('=');
+    const [sg, pl] = form.split('/').map(x => x.trim());
+    return { kind: 'noun', sg, pl, cnt: cnt ? cnt.split('|').map(Number) : null };
+  }
   return { kind: 'gap', alts: g.split('|').map(x => x.trim()).filter(Boolean) };
 }
 const toks = t => Array.from(String(t || '').matchAll(TOK)).map(parseTok);
@@ -87,7 +92,12 @@ function lev(a, b){
   return d[a.length][b.length];
 }
 // Ô ghi tên tranh (bài 2): "a lorry" / "an umbrella" / "three lorries" / "3 lorries"
-function nounCheck(ans, sg, pl){
+// Đáp án hiển thị của ô danh từ: có số lượng → "three shelves" / "a sofa"; không có → "a shelf / (số đếm) shelves"
+const NUMWORD = ['', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'eleven', 'twelve'];
+const aAn = sg => (vowelStart(sg) ? 'an ' : 'a ') + sg;
+const nounAns = (tok, full) => !tok.cnt ? (full ? `${aAn(tok.sg)} / (số đếm) ${tok.pl}` : aAn(tok.sg))
+  : tok.cnt.map(n => n === 1 ? aAn(tok.sg) : (NUMWORD[n] || n) + ' ' + tok.pl).join(' / ');
+function nounCheck(ans, sg, pl, cnt){
   const s = nrm(ans); if (!s) return { ok: false, why: 'empty' };
   const m = s.match(/^(a|an|one|\d+|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve)\s+(.+)$/);
   const det = m ? m[1] : '', noun = m ? m[2] : s;
@@ -98,6 +108,7 @@ function nounCheck(ans, sg, pl){
     return { ok: false, why: close ? 'spell' : 'word' };
   }
   if (!det) return { ok: false, why: 'noart' };
+  if (cnt && !cnt.includes(n)) return { ok: false, why: 'count' };
   if (isSg){
     if (n !== 1) return { ok: false, why: 'needpl' };
     if (det === 'a' && vowelStart(sg)) return { ok: false, why: 'aan' };
@@ -113,6 +124,7 @@ const NOUN_HINT = {
   aan: 'Xem lại <b>a</b> hay <b>an</b>: “an” đứng trước từ bắt đầu bằng âm nguyên âm (a, e, i, o, u).',
   needpl: 'Có số đếm từ 2 trở lên thì danh từ phải ở <b>số nhiều</b>. Nhớ số nhiều đặc biệt (man → ?, woman → ?, shelf → ?).',
   sgpl: '<b>a / an</b> chỉ đi với danh từ <b>số ít</b>. Muốn dùng số nhiều thì đếm xem có mấy cái.',
+  count: 'Đếm lại trong tranh xem có <b>mấy</b> cái (chữ cái chỉ vào nhóm đồ vật đó).',
   spell: 'Gần đúng rồi! So lại chính tả với từ trong khung.',
   word: 'Nhìn kỹ chữ cái trong tranh rồi chọn lại từ trong khung.',
 };
@@ -221,7 +233,7 @@ function buildQS(){
 }
 const qOf = k => QS.find(q => q.k === k);
 const tokText = tok => tok.kind === 'ch' ? tok.correct.map(i => tok.opts[i]).join(' + ')
-  : tok.kind === 'noun' ? `${vowelStart(tok.sg) ? 'an' : 'a'} ${tok.sg} / (số đếm) ${tok.pl}` : tok.alts[0];
+  : tok.kind === 'noun' ? nounAns(tok, true) : tok.alts[0];
 const correctText = q => { const c = tokText(q.tok); return q.tok.kind === 'ch' ? unv(c).replace(/^–$/, '– (không mạo từ)') : c; };
 // Câu hỏi dạng chữ (cho mail): chỗ đang hỏi = ___ hoặc (lựa chọn), chỗ khác = …
 function qText(q){
@@ -552,7 +564,7 @@ const ansText = q => {
 function isOk(q){
   const v = S.a[q.k];
   if (q.tok.kind === 'ch'){ const a = (Array.isArray(v) ? v : []).slice().sort((x, y) => x - y); return a.length === q.tok.need && a.every((x, i) => x === q.tok.correct[i]); }
-  if (q.tok.kind === 'noun') return nounCheck(v, q.tok.sg, q.tok.pl).ok;
+  if (q.tok.kind === 'noun') return nounCheck(v, q.tok.sg, q.tok.pl, q.tok.cnt).ok;
   const y = nrm(v); return !!y && q.tok.alts.some(a => nrm(a) === y);
 }
 function gradeNow(){
@@ -569,7 +581,7 @@ const sameAns = (k) => JSON.stringify(S.a[k] ?? null) === JSON.stringify(S.r1.it
 function hintFor(k){
   const q = qOf(k), r = S.r1.items[k];
   if (!r.ans) return 'Em chưa làm câu này.';
-  if (q.tok.kind === 'noun') return NOUN_HINT[nounCheck(r.ans, q.tok.sg, q.tok.pl).why] || NOUN_HINT.word;
+  if (q.tok.kind === 'noun') return NOUN_HINT[nounCheck(r.ans, q.tok.sg, q.tok.pl, q.tok.cnt).why] || NOUN_HINT.word;
   if (q.tok.kind === 'ch' && q.tok.need > 1 && (r.v || []).length !== q.tok.need) return `Nhớ chọn đủ <b>${q.tok.need}</b> từ. ` + (q.h || '');
   if (q.tok.kind === 'gap' && q.e.only && !q.e.only.includes(nrm(r.ans))) return 'Chỉ gõ 1 trong các từ: <b>' + q.e.only.join(', ') + '</b>. ' + (q.h || '');
   return q.h || 'Đọc lại ô Grammar ở đầu bài rồi thử lại.';
@@ -647,7 +659,7 @@ function paintMarks(){
     }
     const R = (S.r2 || S.r1).items[q.k];
     el.value = R.ans || ''; el.disabled = true; el.classList.add(R.ok ? 'ok' : 'bad');
-    if (!R.ok) el.insertAdjacentHTML('afterend', `<span class="sol">→ ${esc(q.tok.kind === 'noun' ? (vowelStart(q.tok.sg) ? 'an ' : 'a ') + q.tok.sg : q.tok.alts[0])}</span>`);
+    if (!R.ok) el.insertAdjacentHTML('afterend', `<span class="sol">→ ${esc(q.tok.kind === 'noun' ? nounAns(q.tok) : q.tok.alts[0])}</span>`);
   });
   // gợi ý (chỉ lúc làm lại) gom theo câu
   $$('[data-fix]').forEach(f => { f.innerHTML = ''; });

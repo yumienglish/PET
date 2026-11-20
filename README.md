@@ -13,7 +13,7 @@ Link cho học sinh: https://yumienglish.github.io/PET/
 ## Cách viết câu hỏi trong `lessons.js`
 - `((a/*b))`: chọn 1, dấu `*` là đáp án đúng · `((*a/*b/c))`: chọn 2
 - `[[some]]`: ô gõ chữ (nhiều đáp án thì ngăn bằng `|`)
-- `[[N:shelf/shelves]]`: ô "a/an + số ít" hoặc "số đếm + số nhiều"
+- `[[N:shelf/shelves]]`: ô "a/an + số ít" hoặc "số đếm + số nhiều" · `[[N:shelf/shelves=3]]`: phải đúng số lượng như Teacher's Book (`=2|3`: nhiều số đều đúng)
 - `{{từ}}` hoặc `{{khoá|chữ hiện}}`: từ mới, chạm vào thì hiện nghĩa và máy đọc to
 - `h`: gợi ý ngữ pháp khi làm lại câu sai (không ghi đáp án)
 - Bài nghe: thêm `track: 'tên-file'` (file trong `audio/`). Bài "listen and check" thì không gắn audio.
