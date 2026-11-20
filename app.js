@@ -899,8 +899,41 @@ window.addEventListener('blur', goAway);
 window.addEventListener('focus', comeBack);
 
 /* ============ KHỞI ĐỘNG ============ */
+/* ============ CHẶN TRÌNH DUYỆT TRONG ZALO ============ */
+// Mở link ngay trong Zalo thì bài làm lưu trong Zalo, mở lại bằng trình duyệt khác sẽ mất → không cho làm,
+// hướng dẫn mở bằng Chrome (Android) / Safari (iPhone). Cô xem thử màn này: thêm ?zalo vào link.
+const IN_ZALO = /\bZalo/i.test(navigator.userAgent) || new URLSearchParams(location.search).has('zalo');
+function zaloBlock(){
+  const ios = /iPhone|iPad|iPod/i.test(navigator.userAgent) || (/Macintosh/.test(navigator.userAgent) && 'ontouchend' in document);
+  const br = ios ? 'Safari' : 'Chrome';
+  $('#bar').hidden = true; $('#back').hidden = true;
+  document.title = 'Mở bằng trình duyệt – PET Arena';
+  $('#app').innerHTML = `<section class="card zalo">
+    <div class="zic">🚫</div>
+    <h2>Không làm bài trong Zalo nhé!</h2>
+    <p>Làm bài ngay trong Zalo sẽ <b>không lưu được kết quả</b> (mở lại hoặc đổi máy là mất bài). Em mở link bằng <b>${br}</b> để làm nha.</p>
+    <ol class="zsteps">
+      <li>Nhấn vào nút <span class="zkey">⋯</span> (3 chấm) ở <b>góc trên bên phải</b> màn hình.</li>
+      <li>Chọn <b>“Mở bằng trình duyệt”</b> (hoặc “Open in browser”).</li>
+      <li>Chọn <b>${br}</b>${ios ? '' : ' (nếu máy hỏi chọn trình duyệt)'}. Lần sau luôn mở link bằng <b>${br}</b> trên <b>cùng một máy</b> để không mất bài.</li>
+    </ol>
+    <p class="muted small">Không thấy nút 3 chấm? Bấm <b>Sao chép link</b> rồi dán vào ${br}.</p>
+    <button class="btn" type="button" id="zCopy">📋 Sao chép link</button> <span class="zok" id="zOk"></span>
+  </section>`;
+  $('#zCopy').onclick = async () => {
+    const url = location.href.replace(/([?&])zalo(=[^&]*)?(&|$)/, (m, a, b, c) => c ? a : '').replace(/[?&]$/, '');
+    let ok = false;
+    try { await navigator.clipboard.writeText(url); ok = true; } catch (e) {
+      const t = document.createElement('textarea'); t.value = url; document.body.appendChild(t); t.select();
+      try { ok = document.execCommand('copy'); } catch (e2) {} t.remove();
+    }
+    $('#zOk').textContent = ok ? '✅ Đã chép! Mở ' + br + ' và dán vào ô địa chỉ.' : url;
+  };
+}
+
 (function boot(){
   initArena();
+  if (IN_ZALO){ zaloBlock(); return; }
   if (!LESSON){
     $('#bar').hidden = true;
     if (WEEK_NO) { $('#app').innerHTML = '<div class="card">🔒 Mission này chưa mở. <a href="./">← Về Lobby</a></div>'; return; }
