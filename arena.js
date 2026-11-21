@@ -214,7 +214,7 @@ function checkRank(){
 const two = n => String(n).padStart(2, '0');
 function lobbyHtml(){
   const d = gameData(), me = lsGet(ME_KEY) || {}, rk = d.rank;
-  const first = String(me.name || '').trim().split(/\s+/).pop();
+  const first = (typeof YA !== 'undefined' && YA && YA.me()) ? YA.me().name : String(me.name || '').trim().split(/\s+/).pop(); // đăng nhập → nguyên nickname
   const next = LESSONS[OPEN_WEEK + 1];
   const missions = d.states.slice().reverse().map(({ w, L, s }) => {
     const r = s.r2 || s.r1, x = missionXP(s).total;
