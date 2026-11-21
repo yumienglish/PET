@@ -411,3 +411,6 @@ body.home main{margin-top:-70px}
 
 /* Tài khoản Yumi: nút 🏆 + Log out trong thẻ người chơi ở Lobby */
 .yarow{display:flex;gap:14px;align-items:center;justify-content:center;flex-wrap:wrap;margin-top:12px}
+
+/* Nhân vật tủ đồ (avatar.js) thay avatar */
+.avchar{overflow:hidden;padding:0;background:radial-gradient(circle,#fff,#d9e6ff)}.avchar .yav{width:100%}

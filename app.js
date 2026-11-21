@@ -179,12 +179,13 @@ const YA_OPTS = { mascot: 'img/ai/coach.webp', title: 'PET Arena ⚡', sub: 'Log
   theme: { bg: 'linear-gradient(160deg,#121a3a 0%,#0b1024 55%,#1b0f33 100%)', card: 'linear-gradient(180deg,#19213d,#131a30)',
     text: '#e8ecf8', acc: '#0891b2', acc2: '#c026d3', dark: true,
     font: '"Be Vietnam Pro",system-ui,sans-serif', head: '"Chakra Petch","Be Vietnam Pro",system-ui,sans-serif' } };
-function yaSync(){ // tên + lớp lấy theo tài khoản
+const yaChar = () => { const m = YA && YA.me(); return !!(m && /^teen:\{/.test(m.avatar || '')); }; // đã có nhân vật tủ đồ
+function yaSync(){ // tên + lớp lấy theo tài khoản; có nhân vật thì avatar = nhân vật
   const m = YA && YA.me(); if (!m) return;
-  lsSet(ME_KEY, Object.assign(lsGet(ME_KEY) || {}, { name: m.fullName || m.name, cls: m.cls }));
+  lsSet(ME_KEY, Object.assign(lsGet(ME_KEY) || {}, { name: m.fullName || m.name, cls: m.cls }, yaChar() ? { av: 'char' } : {}));
 }
 function yaAvatar(){ // gửi avatar lên bảng xếp hạng (ảnh tự chụp thì không gửi)
-  const a = AV || (lsGet(ME_KEY) || {}).av; if (!YA || !a || /^data:/.test(a)) return;
+  const a = AV || (lsGet(ME_KEY) || {}).av; if (!YA || !a || /^data:/.test(a) || a === 'char') return;
   YA.setAvatar(/^pic:\d+$/.test(a) ? new URL(`img/ai/av-${a.slice(4)}.webp`, location.href).pathname : a);
 }
 function yaHome(){
@@ -194,8 +195,13 @@ function yaHome(){
   row.appendChild(YA.trophy({ theme: YA_OPTS.theme }));
   const out = document.createElement('button'); out.type = 'button'; out.className = 'linkbtn'; out.textContent = 'Log out';
   out.onclick = () => YA.logout();
+  if (window.YumiAvatar) row.appendChild(YumiAvatar.button({ style: 'teen', theme: YA_OPTS.theme, onSave: () => { yaSync(); renderHome(); } }));
   row.appendChild(out); card.appendChild(row);
-  yaAvatar(); YA.autoBoard({ theme: YA_OPTS.theme });
+  yaAvatar();
+  // lần đầu: tạo nhân vật (chỉ đồ miễn phí) → vẽ lại sảnh với nhân vật, rồi mới hiện bảng xếp hạng
+  const done = () => YA.autoBoard({ theme: YA_OPTS.theme });
+  if (window.YumiAvatar) YumiAvatar.ensure({ style: 'teen', theme: YA_OPTS.theme }).then(v => { if (v) { yaSync(); renderHome(); } else done(); }).catch(done);
+  else done();
 }
 
 // Trang chủ = sảnh chính kiểu game (arena.js): thẻ người chơi + rank, missions, Word Rush, thành tựu
@@ -523,6 +529,7 @@ function buildLesson(){
     ['inName', 'inCls'].forEach(id => { $('#' + id).closest('.field').hidden = true; });
     $('#start h2').textContent = `👋 Hi ${m.name}!`;
     $('#start p.muted').innerHTML = 'Chọn avatar rồi bấm <b>START MISSION</b>.';
+    if (yaChar()){ AV = 'char'; const f = $('#avPick') && $('#avPick').closest('.field'); if (f) f.hidden = true; $('#start p.muted').innerHTML = 'Bấm <b>START MISSION</b> để bắt đầu.'; }
   }
   $('#startBtn').addEventListener('click', onStart);
   ['inName', 'inCls'].forEach(id => $('#' + id).addEventListener('keydown', e => { if (e.key === 'Enter') onStart(); }));

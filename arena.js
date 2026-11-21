@@ -80,7 +80,9 @@ function imgFail(el){
 const PIC_AVATARS = Array.from({ length: 16 }, (_, i) => 'pic:' + (i + 1)); // img/ai/av-1…16.webp
 const AVATARS = ['🦊', '🐺', '🦅', '🐉', '🦈', '🐯', '🦁', '🐼', '🦉', '👾', '🤖', '🥷', '😎', '🎮', '🎧', '⚡', '🔥', '🌙', '🛸', '🏀'];
 let AV = '';
-const avHtml = (av, c = 'av') => /^data:image\//.test(av || '') ? `<img class="${c}" src="${av}" alt="">`
+const avHtml = (av, c = 'av') => av === 'char' && window.YumiAvatar && window.YumiAuth && YumiAuth.me() && /^teen:\{/.test(YumiAuth.me().avatar || '')
+    ? `<span class="${c} avchar">${YumiAvatar.html(YumiAuth.me().avatar, { crop: 'head' })}</span>` // nhân vật tủ đồ
+  : /^data:image\//.test(av || '') ? `<img class="${c}" src="${av}" alt="">`
   : /^pic:\d+$/.test(av || '') ? aiImg('av-' + av.slice(4), c, '🎮')
   : `<span class="${c}">${esc(av || '🎮')}</span>`;
 // ảnh trong máy → cắt vuông, thu nhỏ 160px
@@ -308,6 +310,7 @@ function startRush(){
   });
   function end(){
     if (G.over) return; G.over = true; clearInterval(G.timer);
+    if (window.YumiAvatar && G.score >= 5) YumiAvatar.gamePlayed('word-rush'); // +5 xu (≥5/10 câu đúng, máy chủ giới hạn 3 lượt/ngày)
     const r = Object.assign({ plays: 0, best: 0, xp: 0, days: {} }, lsGet(RUSH_KEY) || {});
     const t = todayStr(), n = r.days[t] || 0, gain = n < 3 ? G.score * 2 : 0; // mỗi ngày tính XP 3 lượt đầu
     r.plays++; r.best = Math.max(r.best, Q.length >= 10 ? G.score : 0); r.xp = (r.xp || 0) + gain; r.days = { [t]: n + 1 };
