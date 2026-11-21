@@ -528,8 +528,8 @@ function buildLesson(){
     $('#inName').value = m.fullName || m.name; $('#inCls').value = m.cls || '-';
     ['inName', 'inCls'].forEach(id => { $('#' + id).closest('.field').hidden = true; });
     $('#start h2').textContent = `👋 Hi ${m.name}!`;
-    $('#start p.muted').innerHTML = 'Chọn avatar rồi bấm <b>START MISSION</b>.';
-    if (yaChar()){ AV = 'char'; const f = $('#avPick') && $('#avPick').closest('.field'); if (f) f.hidden = true; $('#start p.muted').innerHTML = 'Bấm <b>START MISSION</b> để bắt đầu.'; }
+    $('#start p.muted').innerHTML = 'Choose your avatar and tap <b>START MISSION</b>.';
+    if (yaChar()){ AV = 'char'; const f = $('#avPick') && $('#avPick').closest('.field'); if (f) f.hidden = true; $('#start p.muted').innerHTML = 'Tap <b>START MISSION</b> to begin.'; }
   }
   $('#startBtn').addEventListener('click', onStart);
   ['inName', 'inCls'].forEach(id => $('#' + id).addEventListener('keydown', e => { if (e.key === 'Enter') onStart(); }));
