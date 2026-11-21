@@ -408,3 +408,6 @@ body.home main{margin-top:-70px}
 .zsteps li{margin:8px 0}
 .zkey{display:inline-block;font-weight:800;border:1px solid var(--brand);color:var(--brand);border-radius:8px;padding:0 8px;line-height:1.5}
 .zok{display:block;margin-top:8px;font-weight:700;color:var(--ok);word-break:break-all}
+
+/* Tài khoản Yumi: nút 🏆 + Log out trong thẻ người chơi ở Lobby */
+.yarow{display:flex;gap:14px;align-items:center;justify-content:center;flex-wrap:wrap;margin-top:12px}

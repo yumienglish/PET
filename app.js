@@ -172,6 +172,32 @@ function starsOf(s){
 }
 const starRow = n => [1, 2, 3].map(i => `<span class="${i <= n ? '' : 'off'}">⭐</span>`).join('');
 
+/* ============ TÀI KHOẢN YUMI (đăng nhập + bảng xếp hạng, script chung /yumi-auth.js) ============ */
+// YA = null khi công tắc chung chưa bật (hoặc script chung không tải được) → trang chạy như cũ, gõ tên.
+const YA = window.YumiAuth && YumiAuth.ready() ? YumiAuth : null;
+const YA_OPTS = { mascot: 'img/ai/coach.webp', title: 'PET Arena ⚡', sub: 'Log in to enter the Arena 🎮',
+  theme: { bg: 'linear-gradient(160deg,#121a3a 0%,#0b1024 55%,#1b0f33 100%)', card: 'linear-gradient(180deg,#19213d,#131a30)',
+    text: '#e8ecf8', acc: '#0891b2', acc2: '#c026d3', dark: true,
+    font: '"Be Vietnam Pro",system-ui,sans-serif', head: '"Chakra Petch","Be Vietnam Pro",system-ui,sans-serif' } };
+function yaSync(){ // tên + lớp lấy theo tài khoản
+  const m = YA && YA.me(); if (!m) return;
+  lsSet(ME_KEY, Object.assign(lsGet(ME_KEY) || {}, { name: m.fullName || m.name, cls: m.cls }));
+}
+function yaAvatar(){ // gửi avatar lên bảng xếp hạng (ảnh tự chụp thì không gửi)
+  const a = AV || (lsGet(ME_KEY) || {}).av; if (!YA || !a || /^data:/.test(a)) return;
+  YA.setAvatar(/^pic:\d+$/.test(a) ? new URL(`img/ai/av-${a.slice(4)}.webp`, location.href).pathname : a);
+}
+function yaHome(){
+  if (!YA) return;
+  const card = $('#app .player'); if (!card) return;
+  const row = document.createElement('div'); row.className = 'yarow';
+  row.appendChild(YA.trophy({ theme: YA_OPTS.theme }));
+  const out = document.createElement('button'); out.type = 'button'; out.className = 'linkbtn'; out.textContent = 'Log out';
+  out.onclick = () => YA.logout();
+  row.appendChild(out); card.appendChild(row);
+  yaAvatar(); YA.autoBoard({ theme: YA_OPTS.theme });
+}
+
 // Trang chủ = sảnh chính kiểu game (arena.js): thẻ người chơi + rank, missions, Word Rush, thành tựu
 function renderHome(){
   document.title = 'PET Arena ⚡';
@@ -179,6 +205,7 @@ function renderHome(){
   document.body.classList.add('home');
   $('#app').innerHTML = lobbyHtml();
   afterHome();
+  yaHome();
 }
 
 /* ============ DANH SÁCH CÂU HỎI ============ */
@@ -489,6 +516,14 @@ function buildLesson(){
   const me = lsGet(ME_KEY) || {};
   $('#inName').value = S.name || me.name || ''; $('#inCls').value = S.cls || me.cls || '';
   bindAvPicker(me);
+  $('#avPick').addEventListener('click', () => yaAvatar()); // chạy sau bộ chọn của arena.js → AV đã đổi
+  if (YA && YA.me()){ // đã đăng nhập: tên + lớp theo tài khoản, ẩn 2 ô gõ
+    const m = YA.me();
+    $('#inName').value = m.fullName || m.name; $('#inCls').value = m.cls || '-';
+    ['inName', 'inCls'].forEach(id => { $('#' + id).closest('.field').hidden = true; });
+    $('#start h2').textContent = `👋 Hi ${m.name}!`;
+    $('#start p.muted').innerHTML = 'Chọn avatar rồi bấm <b>START MISSION</b>.';
+  }
   $('#startBtn').addEventListener('click', onStart);
   ['inName', 'inCls'].forEach(id => $('#' + id).addEventListener('keydown', e => { if (e.key === 'Enter') onStart(); }));
 }
@@ -508,7 +543,7 @@ function renderWho(){
   const when = S.phase === 'done' ? (S.r2 || S.r1).at : null;
   $('#whoBar').innerHTML = `<span class="whoname">${avHtml(AV || (lsGet(ME_KEY) || {}).av)} <b>${esc(S.name)}</b> · Class <b>${esc(S.cls)}</b></span>` +
     (when ? `<span class="muted small">Submitted ${new Date(when).toLocaleString('vi-VN')}</span>`
-      : S.phase === 'work' ? '<button class="linkbtn" type="button" id="editName">Sửa tên / lớp</button>' : '');
+      : S.phase === 'work' && !YA ? '<button class="linkbtn" type="button" id="editName">Sửa tên / lớp</button>' : '');
   const b = $('#editName'); if (b) b.onclick = () => { $('#work').hidden = true; $('#bar').hidden = true; $('#start').hidden = false; $('#inName').focus(); };
 }
 function showWork(){ $('#start').hidden = true; $('#work').hidden = false; $('#bar').hidden = false; renderWho(); progress(); }
@@ -865,8 +900,10 @@ function payload2(){
   });
 }
 async function post(p){
+  const tk = window.YumiAuth && YumiAuth.token(); if (tk) p.token = tk; // đã đăng nhập → máy chủ ghi đúng tên + tính XP
   const r = await fetch(SCRIPT_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(p) });
   const j = await r.json();
+  if (!j.ok && j.auth && window.YumiAuth){ await YumiAuth.authFailed(YA_OPTS); return post(p); } // hết phiên → đăng nhập lại rồi gửi lại
   if (!j.ok) throw new Error(j.error || 'máy chủ báo lỗi');
 }
 let sending = false;
@@ -931,9 +968,9 @@ function zaloBlock(){
   };
 }
 
-(function boot(){
-  initArena();
-  if (IN_ZALO){ zaloBlock(); return; }
+function boot(){
+  if (YA && !YA.me()){ YA.require(YA_OPTS).then(() => { yaSync(); boot(); }); return; } // bắt đăng nhập trước
+  yaSync();
   if (!LESSON){
     $('#bar').hidden = true;
     if (WEEK_NO) { $('#app').innerHTML = '<div class="card">🔒 Mission này chưa mở. <a href="./">← Về Lobby</a></div>'; return; }
@@ -948,4 +985,9 @@ function zaloBlock(){
   if (S.startedAt && S.name) showWork();
   paintAll();
   if (S.r1 && (!S.sent1 || (S.r2 && !S.sent2))) send(); // lần trước chưa gửi được → gửi lại
+}
+(function start(){
+  initArena(); // gắn nút âm thanh 1 lần (boot() chạy lại sau khi đăng nhập)
+  if (IN_ZALO){ zaloBlock(); return; }
+  boot();
 })();
