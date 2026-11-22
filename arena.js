@@ -144,19 +144,26 @@ const emblem = (rk, big) => `<div class="emb${big ? ' big' : ''}" style="--rc:${
 /* ---------- Số liệu tổng ---------- */
 function gameData(){
   const weeks = Object.keys(LESSONS).map(Number).filter(w => w <= OPEN_WEEK).sort((a, b) => a - b);
-  const states = weeks.map(w => ({ w, L: LESSONS[w], s: lsGet(storeKey(w)) || {} }));
+  // mỗi tuần: mission Grammar + (nếu có) mission Vocab (vocab.js)
+  const states = [];
+  weeks.forEach(w => {
+    states.push({ w, L: LESSONS[w], s: lsGet(storeKey(w)) || {} });
+    if (typeof VOCAB_LESSONS !== 'undefined' && VOCAB_LESSONS[w]) states.push({ w, L: vocabAsLesson(w), s: vocabState(w), vocab: true });
+  });
   const rush = Object.assign({ plays: 0, best: 0, xp: 0, days: {} }, lsGet(RUSH_KEY) || {});
   const done = states.filter(x => x.s.phase === 'done');
   const pool = [];
   done.forEach(x => (x.L.newWords || []).forEach(k => { if (VOCAB[k] && !pool.includes(k)) pool.push(k); }));
   const accs = done.map(x => x.s.r1 && x.s.r1.total ? x.s.r1.score / x.s.r1.total : 1);
+  // chuỗi tuần: 1 tuần tính là xong khi xong hết các mission của tuần đó
+  const wdone = weeks.map(w => states.filter(x => x.w === w).every(x => x.s.phase === 'done'));
   let run = 0, maxStreak = 0;
-  states.forEach(x => { run = x.s.phase === 'done' ? run + 1 : 0; maxStreak = Math.max(maxStreak, run); });
+  wdone.forEach(ok => { run = ok ? run + 1 : 0; maxStreak = Math.max(maxStreak, run); });
   // chuỗi hiện tại: đếm lùi từ tuần mới nhất (tuần đang mở chưa làm thì chưa tính là đứt)
   let streak = 0;
-  for (let i = states.length - 1; i >= 0; i--){
-    if (states[i].s.phase === 'done') streak++;
-    else if (i === states.length - 1) continue;
+  for (let i = wdone.length - 1; i >= 0; i--){
+    if (wdone[i]) streak++;
+    else if (i === wdone.length - 1) continue;
     else break;
   }
   const missionsXP = done.reduce((a, x) => a + missionXP(x.s).total, 0);
@@ -218,15 +225,18 @@ function lobbyHtml(){
   const d = gameData(), me = lsGet(ME_KEY) || {}, rk = d.rank;
   const first = (typeof YA !== 'undefined' && YA && YA.me()) ? YA.me().name : String(me.name || '').trim().split(/\s+/).pop(); // đăng nhập → nguyên nickname
   const next = LESSONS[OPEN_WEEK + 1];
-  const missions = d.states.slice().reverse().map(({ w, L, s }) => {
+  // mới nhất lên đầu; trong cùng 1 tuần: Grammar trước, Vocab sau
+  const ordered = d.states.slice().sort((a, b) => b.w - a.w || (a.vocab ? 1 : 0) - (b.vocab ? 1 : 0));
+  const missions = ordered.map(({ w, L, s, vocab }) => {
     const r = s.r2 || s.r1, x = missionXP(s).total;
     const st = s.phase === 'done' ? `<span class="tag ok">${starRow(starsOf(s))} ${r ? r.score + '/' + r.total : ''}</span><span class="tag xp">+${x} XP</span>`
       : s.phase === 'retry' || s.phase === 'review' ? '<span class="tag warn">✏️ Làm lại câu sai</span>'
       : s.startedAt ? '<span class="tag">⏳ In progress</span>' : '<span class="tag new">NEW</span>';
-    const btn = s.phase === 'done' ? 'REVIEW' : s.phase === 'retry' || s.phase === 'review' ? 'FIX ✏️' : s.startedAt ? 'CONTINUE ▶' : 'PLAY ▶';
-    return `<a class="card lesson mission${s.phase === 'done' ? ' done' : ''}${w === OPEN_WEEK ? ' now' : ''}" href="?w=${w}">
-      ${aiImg('mission-' + String(L.code).toLowerCase().replace(/\s+/g, ''), 'mthumb')}<div class="lnum">${two(w)}</div>
-      <div class="linfo"><div class="lt">MISSION ${two(w)} · ${esc(L.code)}${w === OPEN_WEEK ? ' · <b class="nowtag">THIS WEEK</b>' : ''}</div>
+    const btn = s.phase === 'done' ? (vocab ? 'FLASHCARDS 🃏' : 'REVIEW') : s.phase === 'retry' || s.phase === 'review' ? 'FIX ✏️' : s.startedAt ? 'CONTINUE ▶' : 'PLAY ▶';
+    const slug = (vocab ? 'vocab-' : '') + String(L.code).toLowerCase().replace(/\s+/g, '');
+    return `<a class="card lesson mission${vocab ? ' vocab' : ''}${s.phase === 'done' ? ' done' : ''}${w === OPEN_WEEK ? ' now' : ''}" href="?w=${w}${vocab ? '&m=vocab' : ''}">
+      ${aiImg('mission-' + slug, 'mthumb')}<div class="lnum">${vocab ? '📒' : two(w)}</div>
+      <div class="linfo"><div class="lt">MISSION ${two(w)} · ${vocab ? '<b class="vtag">VOCAB</b>' : 'GRAMMAR'} · ${esc(L.code)}${w === OPEN_WEEK ? ' · <b class="nowtag">THIS WEEK</b>' : ''}</div>
         <div class="ln">${esc(L.title)}</div><div class="ls">${st}</div></div>
       <span class="play">${btn}</span></a>`;
   }).join('');

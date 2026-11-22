@@ -978,6 +978,7 @@ function zaloBlock(){
 function boot(){
   if (YA && !YA.me()){ YA.require(YA_OPTS).then(() => { yaSync(); boot(); }); return; } // bắt đăng nhập trước
   yaSync();
+  if (VMODE) return vocabBoot(); // nhiệm vụ từ vựng (vocab.js)
   if (!LESSON){
     $('#bar').hidden = true;
     if (WEEK_NO) { $('#app').innerHTML = '<div class="card">🔒 Mission này chưa mở. <a href="./">← Về Lobby</a></div>'; return; }

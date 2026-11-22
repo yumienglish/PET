@@ -414,3 +414,70 @@ body.home main{margin-top:-70px}
 
 /* Nhân vật tủ đồ (avatar.js) thay avatar */
 .avchar{overflow:hidden;padding:0;background:radial-gradient(circle,#fff,#d9e6ff)}.avchar .yav{width:100%}
+
+/* ===== NHIỆM VỤ TỪ VỰNG (vocab.js) ===== */
+.vtag{color:#ffd84d}
+.lesson.vocab .lnum{border-color:#ffd84d;color:#ffd84d;font-size:26px;text-shadow:none}
+.lesson.vocab.done .lnum{border-color:var(--ok)}
+.vx-steps{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;margin:0 0 14px}
+.vx-step{display:inline-flex;align-items:center;gap:5px;font-family:var(--disp);font-size:13px;letter-spacing:.05em;text-transform:uppercase;border:1px solid var(--line);background:#0d1328;border-radius:999px;padding:4px 10px;color:var(--muted)}
+.vx-step i{font-style:normal}
+.vx-step.on{border-color:var(--accent);color:#fff;box-shadow:0 0 12px rgba(233,75,255,.4)}
+.vx-step.done{border-color:rgba(61,220,132,.6);color:var(--ok)}
+.vx-h{font-family:var(--disp);font-size:24px;margin:2px 0 10px;letter-spacing:.02em}
+.vx-note{background:rgba(255,216,77,.08);border:1px dashed rgba(255,216,77,.6);border-radius:12px;padding:10px 14px;font-size:16px;color:#ffe9a3;margin-bottom:12px}
+.vx-vi{display:block;font-size:13.5px;font-style:italic;color:var(--muted);margin-top:4px}
+.vx-story p{line-height:1.95;margin:0 0 12px;font-size:17.5px}
+.vx-chips{display:flex;flex-wrap:wrap;gap:6px}
+.vx-chip{font:inherit;font-size:14.5px;font-weight:700;color:var(--muted);background:#0b1022;border:1px solid var(--line);border-radius:999px;padding:4px 12px;cursor:pointer}
+.vx-chip.seen{color:var(--ok);border-color:rgba(61,220,132,.6);background:rgba(61,220,132,.08)}
+.vx-check{display:flex;align-items:flex-start;gap:10px;margin:16px 0 4px;font-weight:700;cursor:pointer;line-height:1.4}
+.vx-check input{width:22px;height:22px;flex:none;accent-color:#3ddc84;margin-top:1px}
+.vx-intro{text-align:center}
+.vx-big{font-size:54px;line-height:1.1;margin:6px 0}
+.vx-how{font-size:17px;font-weight:600;max-width:560px;margin:6px auto 10px}
+.vx-game{min-height:420px}
+.vx-top{display:flex;justify-content:space-between;gap:10px;font-family:var(--disp);letter-spacing:.05em;color:var(--muted);font-size:14px}
+.vx-top b{color:var(--brand)}
+.vx-bar{height:8px;background:#0b1022;border:1px solid var(--line);border-radius:99px;overflow:hidden;margin:6px 0 14px}
+.vx-bar i{display:block;height:100%;background:linear-gradient(90deg,var(--brand),var(--accent));transition:width .3s}
+.vx-again{text-align:center;color:var(--warn);font-weight:700;font-size:14px;margin-bottom:6px}
+.vx-q{font-size:clamp(26px,7vw,38px);font-weight:800;text-align:center;margin:10px 0 4px;display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;line-height:1.2}
+.vx-say{font-size:20px;border:1px solid var(--line);background:#0d1328;border-radius:10px;padding:2px 8px;cursor:pointer;color:var(--ink)}
+.vx-sub{text-align:center;color:var(--muted);margin-bottom:14px}
+.vx-opts{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media (max-width:520px){.vx-opts{grid-template-columns:1fr}}
+.vx-opt{font:inherit;font-weight:700;font-size:16.5px;color:var(--ink);background:#0d1328;border:1px solid var(--line);border-radius:12px;padding:14px 12px;cursor:pointer;line-height:1.35;text-align:left}
+.vx-opt:hover{border-color:var(--brand)}
+.vx-opt.ok{border-color:var(--ok);background:var(--ok-bg);color:var(--ok)}
+.vx-opt.bad{border-color:var(--bad);background:var(--bad-bg);color:var(--bad)}
+.vx-flip{position:relative;perspective:1000px;min-height:230px;cursor:pointer;margin:6px 0 14px}
+.vx-flip.big{min-height:250px}
+.vx-face{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:16px;border-radius:16px;border:1px solid var(--line);background:linear-gradient(160deg,#1b2346,#0d1328);backface-visibility:hidden;-webkit-backface-visibility:hidden;transition:transform .45s}
+.vx-face.back{transform:rotateY(180deg);border-color:rgba(255,216,77,.55)}
+.vx-flip.on .vx-face.front{transform:rotateY(-180deg)}
+.vx-flip.on .vx-face.back{transform:rotateY(0)}
+.vx-ex{font-style:italic;color:#c9d3ef;font-size:16.5px;max-width:560px;margin:8px auto 0;line-height:1.5}
+.vx-mean{font-size:clamp(22px,5.5vw,28px);font-weight:800;color:#ffd84d;text-align:center;line-height:1.3}
+.vx-en{color:#c9d3ef;text-align:center;margin-top:4px}
+.vx-ipa{color:var(--muted);font-size:15px;margin-top:6px;text-align:center}
+.vx-row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:12px}
+.vx-row.left{justify-content:flex-start}
+.vx-pat{text-align:center;font-size:clamp(20px,5vw,26px);font-weight:700;margin:16px 0 10px;letter-spacing:.02em}
+.vx-blank{color:var(--brand);letter-spacing:.12em}
+.vx-in{font:inherit;font-weight:700;font-size:19px;color:#8fdcff;background:#0b1022;border:1px solid #3a4670;border-bottom:2px solid var(--brand);border-radius:10px;padding:8px 12px;outline:none;min-width:150px;max-width:100%}
+.vx-in.wide{display:block;width:100%;max-width:420px;margin:0 auto;text-align:center}
+.vx-in:focus{box-shadow:var(--glow)}
+.vx-in.ok{border-color:var(--ok);color:var(--ok);background:var(--ok-bg)}
+.vx-in.bad{border-color:var(--bad);color:var(--bad);background:var(--bad-bg)}
+.vx-in.shake{animation:vxshake .35s}
+@keyframes vxshake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.vx-sent{font-size:clamp(18px,4.6vw,21px);line-height:2.2;text-align:center;margin:14px 0 6px}
+.vx-sent .vx-in{width:11em;text-align:center;margin:0 4px}
+.vx-fb{min-height:30px;text-align:center;margin-top:10px;display:flex;flex-direction:column;gap:2px;align-items:center}
+.vx-fb .ok{color:var(--ok);font-weight:800} .vx-fb .bad{color:#ffb3c0;font-weight:700}
+.vx-bankd{margin-top:16px;border:1px solid var(--line);border-radius:12px;background:#0d1328}
+.vx-bankd summary{cursor:pointer;padding:8px 12px;font-weight:700;color:var(--brand)}
+.vx-bank{display:flex;flex-wrap:wrap;gap:4px 12px;padding:0 12px 10px;font-weight:600;font-size:14.5px;color:#c9d3ef}
+.vx-rounds{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}
+.vx-fc{border-color:rgba(255,216,77,.45)}
