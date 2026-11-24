@@ -14,7 +14,7 @@
    • h: gợi ý ngữ pháp, chỉ hiện khi làm lại câu sai (KHÔNG ghi đáp án).
      Câu có nhiều chỗ trống thì h là mảng, theo thứ tự chỗ trống.
    ===================================================================== */
-const OPEN_WEEK = 1;
+const OPEN_WEEK = 2;
 
 // Máy chủ nhận bài (Code.gs dùng chung với các trang BTVN khác)
 const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyAom9bBpL0ms0VD7_bz5w691011llkFzttYSjKDyRyMCjLLeUZ4EZGGJLtLMFWuiV4sA/exec';
