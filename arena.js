@@ -167,7 +167,7 @@ function gameData(){
     else break;
   }
   const missionsXP = done.reduce((a, x) => a + missionXP(x.s).total, 0);
-  const xp = missionsXP + (rush.xp || 0);
+  const xp = missionsXP + (rush.xp || 0) + (typeof battleXP === 'function' ? battleXP() : 0); // + thắng boss lần đầu
   return { weeks, states, done, rush, pool, words: pool.length, xp, rank: rankOf(xp), streak, maxStreak,
     acc: accs.length ? Math.round(accs.reduce((a, b) => a + b, 0) / accs.length * 100) : 0 };
 }
@@ -259,12 +259,14 @@ function lobbyHtml(){
     <h2 class="sech">🎮 Missions</h2>
     ${missions}
     ${next ? `<div class="card lesson mission locked"><div class="lnum">🔒</div><div class="linfo"><div class="lt">MISSION ${two(OPEN_WEEK + 1)}</div><div class="ln">Unlocks next week</div></div></div>` : ''}
+    ${typeof bossCards === 'function' ? bossCards() : ''}
     ${rushCard(d)}
     ${badgesHtml(d)}
-    <p class="muted small xpnote">⚡ XP = độ chính xác lần nộp đầu (tối đa 100) · sửa đúng ở lần 2: tối đa +50 · +20 nếu không rời trang · +50 nếu đúng hết ngay lần đầu · Word Rush +2/câu đúng.</p>`;
+    <p class="muted small xpnote">⚡ XP = độ chính xác lần nộp đầu (tối đa 100) · sửa đúng ở lần 2: tối đa +50 · +20 nếu không rời trang · +50 nếu đúng hết ngay lần đầu · Word Rush +2/câu đúng · Hạ boss lần đầu +150.</p>`;
 }
 function afterHome(){
   const b = $('#rushBtn'); if (b) b.onclick = () => { sfx('tick'); startRush(); };
+  if (typeof afterHomeBattle === 'function') afterHomeBattle();
   setTimeout(() => { if (!checkRank()) checkBadges(); }, 500);
 }
 
