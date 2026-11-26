@@ -52,7 +52,7 @@ body.noscroll{overflow:hidden}
 .bt-opts{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .bt-opts.long{grid-template-columns:1fr}
 .bt-opt{font:inherit;font-weight:800;font-size:17px;text-align:left;color:#e9edff;background:#1b2246;border:2px solid #2b3466;border-radius:10px;padding:12px 14px;cursor:pointer;box-shadow:0 4px 0 #0b0f1e;transition:transform .08s,border-color .15s}
-.bt-opt:hover:not(:disabled){border-color:#22e3ff;transform:translateY(-1px)}
+@media (hover:hover){.bt-opt:hover:not(:disabled){border-color:#22e3ff;transform:translateY(-1px)}}
 .bt-opt:disabled{cursor:default}
 .bt-opt.ok{background:rgba(182,255,59,.15);border-color:#b6ff3b;color:#d8ff8a}
 .bt-opt.bad{background:rgba(255,46,136,.18);border-color:#ff2e88;color:#ff9fc8;animation:shake .35s}
@@ -163,8 +163,8 @@ body.noscroll{overflow:hidden}
 .bt-endmas{height:150px;width:auto}
 @media (max-width:620px){.bth{padding:6px 8px 12px;gap:6px}.bth-name .av{width:28px;height:28px}.bth .bt-hint{display:none}.bt .bt-q{margin:8px auto}}
 @media (prefers-reduced-motion:reduce){.ar-bg,.ftr[data-pose="idle"] img{animation:none}}
-.bt-btns{display:flex;gap:6px;margin-top:4px}
-.bth-mid .bt-btns button{width:32px;height:32px;font-size:14px;margin:0;border-radius:50%;border:2px solid #2b3466;background:rgba(11,15,30,.7);color:#fff;cursor:pointer}
+.bt-btns{display:flex;gap:12px;margin-top:4px}
+.bth-mid .bt-btns button{width:40px;height:40px;font-size:16px;margin:0;border-radius:50%;border:2px solid #2b3466;background:rgba(11,15,30,.7);color:#fff;cursor:pointer}
 @keyframes shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
 /* thẻ BOSS ở Lobby */
 .bossc{display:flex;align-items:center;gap:14px;background:linear-gradient(120deg,rgba(80,10,40,.92),rgba(20,16,48,.95));border:1px solid rgba(255,46,136,.55);box-shadow:0 0 24px rgba(255,46,136,.25)}
@@ -179,3 +179,5 @@ body.noscroll{overflow:hidden}
 .bossc.won{border-color:rgba(255,200,61,.6);box-shadow:0 0 24px rgba(255,200,61,.25)}
 @media (max-width:560px){.bossc{flex-wrap:wrap}.bossc .btn{width:100%}}
 .bpic{display:block;max-height:150px;max-width:100%;border-radius:10px;margin:4px 0 8px;background:#fff}
+
+.bt-opt,.bt-in,.bsk button,.bt-btns button{touch-action:manipulation;-webkit-tap-highlight-color:transparent}

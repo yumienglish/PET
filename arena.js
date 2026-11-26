@@ -305,10 +305,11 @@ function startRush(){
     body.innerHTML = `<div class="gno">${G.i + 1} / ${Q.length}</div>
       ${q.mode === 'en' ? `<div class="gq"><button class="gsay" type="button" aria-label="Listen">🔊</button> ${esc(v.w)}</div><div class="gh">What does it mean?</div>`
         : `<div class="gq vi">${esc(viShort(v))}</div><div class="gh">Which English word?</div>`}
-      <div class="gopts">${q.opts.map(o => `<button class="gopt" type="button" data-k="${esc(o)}">${esc(q.mode === 'en' ? viShort(VOCAB[o]) : VOCAB[o].w)}</button>`).join('')}</div>`;
+      <div class="gopts">${q.opts.map(o => `<button class="gopt" type="button" disabled data-k="${esc(o)}">${esc(q.mode === 'en' ? viShort(VOCAB[o]) : VOCAB[o].w)}</button>`).join('')}</div>`;
     if (q.mode === 'en') say(v.w);
     const s = body.querySelector('.gsay'); if (s) s.onclick = () => say(v.w);
     G.lock = false;
+    setTimeout(() => body.querySelectorAll('.gopt').forEach(b => { b.disabled = false; }), 300);
   }
   body.addEventListener('click', ev => {
     const b = ev.target.closest('.gopt'); if (!b || G.lock) return;

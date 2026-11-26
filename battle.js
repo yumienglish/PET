@@ -527,7 +527,7 @@ function startBattle(cfg){
       <div class="bt-sent">${battleSentence(q)}</div>
       ${A.type === 'opt'
         ? `<div class="bt-opts${A.opts.some(o => o.label.length > 40) ? ' long' : ''}">${A.opts.map((o, i) => `<button class="bt-opt" type="button" data-i="${i}">${esc(o.label)}</button>`).join('')}</div>`
-        : `<form class="bt-type" autocomplete="off"><input class="bt-in" type="text" autocapitalize="off" spellcheck="false" placeholder="Type your answer…"><button class="btn orange" type="submit">ATTACK ⚔️</button></form>`}
+        : `<form class="bt-type" autocomplete="off"><input class="bt-in" type="text" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="Type your answer…"><button class="btn orange" type="submit">ATTACK ⚔️</button></form>`}
       <div class="bt-fb" id="btFb"></div>`;
     $('#btQ').classList.toggle('ultq', !!q.ult);
     $('#btQ').scrollTop = 0;

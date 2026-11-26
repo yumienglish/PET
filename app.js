@@ -194,7 +194,7 @@ function yaHome(){
   const row = document.createElement('div'); row.className = 'yarow';
   row.appendChild(YA.trophy({ theme: YA_OPTS.theme }));
   const out = document.createElement('button'); out.type = 'button'; out.className = 'linkbtn'; out.textContent = 'Log out';
-  out.onclick = () => YA.logout();
+  out.onclick = async () => { if (await modal('Log out of PET Arena?<br><small class="muted">Đăng xuất? Lần sau em phải nhập lại nickname + PIN.</small>', 'Log out', 'Stay')) YA.logout(); };
   if (window.YumiAvatar) row.appendChild(YumiAvatar.button({ style: 'teen', theme: YA_OPTS.theme, onSave: () => { yaSync(); renderHome(); } }));
   row.appendChild(out); card.appendChild(row);
   yaAvatar();
@@ -514,7 +514,7 @@ function buildLesson(){
     const k = b.closest('.ch').dataset.k, q = qOf(k), i = Number(b.dataset.i);
     if (!(S.phase === 'work' || (S.phase === 'retry' && !S.r1.items[k].ok))) return;
     let cur = Array.isArray(S.a[k]) ? S.a[k].slice() : [];
-    if (q.tok.need <= 1) cur = cur[0] === i ? [] : [i];
+    if (q.tok.need <= 1){ if (cur[0] === i) return; cur = [i]; }
     else if (cur.includes(i)) cur = cur.filter(x => x !== i);
     else { cur.push(i); if (cur.length > q.tok.need) cur.shift(); }
     S.a[k] = cur; save(); paintChoices(); sfx('tick'); progress(); if (S.phase === 'retry') topProgress();

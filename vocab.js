@@ -155,8 +155,9 @@ function vq(){
     vwrap(`<section class="card vx-game">${vprog()}${tagAgain}
       <div class="vx-q"><button class="vx-say" type="button" aria-label="Listen">🔊</button> ${esc(c.w)}</div>
       <div class="vx-sub">What does it mean?</div>
-      <div class="vx-opts">${opts.map(x => `<button class="vx-opt" type="button" data-j="${x}">${esc(VL.cards[x].vi)}</button>`).join('')}</div></section>`);
+      <div class="vx-opts">${opts.map(x => `<button class="vx-opt" type="button" disabled data-j="${x}">${esc(VL.cards[x].vi)}</button>`).join('')}</div></section>`);
     say(c.say || c.w); $('.vx-say').onclick = () => say(c.say || c.w);
+    setTimeout(() => $$('.vx-opt').forEach(b => { b.disabled = false; }), 300);
     $$('.vx-opt').forEach(b => b.onclick = () => {
       if (VG.lock) return; VG.lock = true;
       const ok = Number(b.dataset.j) === j;
@@ -176,7 +177,8 @@ function vq(){
     const flip = () => {
       if ($('#vxFlip').classList.contains('on')) return;
       $('#vxFlip').classList.add('on'); sfx('pop');
-      $('#vxRow').innerHTML = '<button class="btn grey" id="vxNo" type="button">🔁 Not yet</button><button class="btn" id="vxYes" type="button">✅ I knew it</button>';
+      $('#vxRow').innerHTML = '<button class="btn grey" id="vxNo" type="button" disabled>🔁 Not yet</button><button class="btn" id="vxYes" type="button" disabled>✅ I knew it</button>';
+      setTimeout(() => { $$('#vxNo,#vxYes').forEach(b => { b.disabled = false; }); }, 500);
       $('#vxYes').onclick = () => { if (VG.lock) return; VG.lock = true; vmark(j, true, 'I knew it'); vnext(250); };
       $('#vxNo').onclick = () => { if (VG.lock) return; VG.lock = true; vmark(j, false, 'Not yet (chưa nhớ)'); vnext(250); };
     };
