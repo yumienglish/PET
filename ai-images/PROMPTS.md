@@ -5,7 +5,7 @@ Phong cách: game xếp hạng / esports cho học sinh ~16 tuổi (nền tối,
 ## Cách làm
 1. Mở ChatGPT, chọn tạo hình (Create image).
 2. Mỗi hình: dán **đoạn STYLE** + **đoạn prompt của hình đó**, gửi.
-3. Tải ảnh về, lưu vào `D:\pet\ai-images\` với **đúng tên file** ghi ở mỗi hình.
+3. Tải ảnh về, lưu vào `D:\8 Web bai tap\pet\ai-images\` với **đúng tên file** ghi ở mỗi hình.
 4. Báo mình: mình nén ảnh, cắt các ô của hình lưới, đưa vào `img/ai/` rồi đưa lên web.
 
 Hình nào chưa có thì trang tự dùng giao diện hiện tại (không lỗi). Nếu ảnh có chữ, bảo ChatGPT: *"Same image, but remove all text, letters and numbers."*
