@@ -224,22 +224,6 @@ const two = n => String(n).padStart(2, '0');
 function lobbyHtml(){
   const d = gameData(), me = lsGet(ME_KEY) || {}, rk = d.rank;
   const first = (typeof YA !== 'undefined' && YA && YA.me()) ? YA.me().name : String(me.name || '').trim().split(/\s+/).pop(); // đăng nhập → nguyên nickname
-  const next = LESSONS[OPEN_WEEK + 1];
-  // mới nhất lên đầu; trong cùng 1 tuần: Grammar trước, Vocab sau
-  const ordered = d.states.slice().sort((a, b) => b.w - a.w || (a.vocab ? 1 : 0) - (b.vocab ? 1 : 0));
-  const missions = ordered.map(({ w, L, s, vocab }) => {
-    const r = s.r2 || s.r1, x = missionXP(s).total;
-    const st = s.phase === 'done' ? `<span class="tag ok">${starRow(starsOf(s))} ${r ? r.score + '/' + r.total : ''}</span><span class="tag xp">+${x} XP</span>`
-      : s.phase === 'retry' || s.phase === 'review' ? '<span class="tag warn">✏️ Làm lại câu sai</span>'
-      : s.startedAt ? '<span class="tag">⏳ In progress</span>' : '<span class="tag new">NEW</span>';
-    const btn = s.phase === 'done' ? (vocab ? 'FLASHCARDS 🃏' : 'REVIEW') : s.phase === 'retry' || s.phase === 'review' ? 'FIX ✏️' : s.startedAt ? 'CONTINUE ▶' : 'PLAY ▶';
-    const slug = (vocab ? 'vocab-' : '') + String(L.code).toLowerCase().replace(/\s+/g, '');
-    return `<a class="card lesson mission${vocab ? ' vocab' : ''}${s.phase === 'done' ? ' done' : ''}${w === OPEN_WEEK ? ' now' : ''}" href="?w=${w}${vocab ? '&m=vocab' : ''}">
-      ${aiImg('mission-' + slug, 'mthumb')}<div class="lnum">${vocab ? '📒' : two(w)}</div>
-      <div class="linfo"><div class="lt">MISSION ${two(w)} · ${vocab ? '<b class="vtag">VOCAB</b>' : 'GRAMMAR'} · ${esc(L.code)}${w === OPEN_WEEK ? ' · <b class="nowtag">THIS WEEK</b>' : ''}</div>
-        <div class="ln">${esc(L.title)}</div><div class="ls">${st}</div></div>
-      <span class="play">${btn}</span></a>`;
-  }).join('');
   return `<section class="card player">
       <div class="pl-top">
         <div class="pl-av">${avHtml(me.av, 'av big')}</div>
@@ -256,19 +240,75 @@ function lobbyHtml(){
       </div>
       <p class="hiline">${hiLine()}</p>
     </section>
-    <h2 class="sech">🎮 Missions</h2>
-    ${missions}
-    ${next ? `<div class="card lesson mission locked"><div class="lnum">🔒</div><div class="linfo"><div class="lt">MISSION ${two(OPEN_WEEK + 1)}</div><div class="ln">Unlocks next week</div></div></div>` : ''}
-    ${typeof bossCards === 'function' ? bossCards() : ''}
+    ${mapHtml(d)}
     ${rushCard(d)}
     ${badgesHtml(d)}
     <p class="muted small xpnote">⚡ XP = độ chính xác lần nộp đầu (tối đa 100) · sửa đúng ở lần 2: tối đa +50 · +20 nếu không rời trang · +50 nếu đúng hết ngay lần đầu · Word Rush +2/câu đúng · Hạ boss lần đầu +150.</p>`;
 }
 function afterHome(){
+  drawMap(); setTimeout(drawMap, 300); // vẽ lại khi chữ / hình đã hiện
   const b = $('#rushBtn'); if (b) b.onclick = () => { sfx('tick'); startRush(); };
   if (typeof afterHomeBattle === 'function') afterHomeBattle();
   setTimeout(() => { if (!checkRank()) checkBadges(); }, 500);
 }
+
+/* ---------- Bản đồ season (giống B2 First) ----------
+   Mỗi mission = 1 chặng, cũ ở trên → mới ở dưới (trong 1 tuần: Grammar rồi Vocab). Chặng chưa xong đầu tiên sáng lên + avatar đứng cạnh.
+   Boss đã mở chen sau tuần B.after; Boss kế tiếp (khoá) hiện trước đích. Đích = kỳ thi PET. */
+const MAP_XS = [50, 72, 50, 28];
+function mapHtml(d){
+  const me = lsGet(ME_KEY) || {};
+  const list = d.states.slice().sort((x, y) => x.w - y.w || (x.vocab ? 1 : 0) - (y.vocab ? 1 : 0));
+  const cur = list.find(x => x.s.phase !== 'done') || null, here = cur || list[list.length - 1];
+  const rows = list.map(x => ({ x }));
+  if (LESSONS[OPEN_WEEK + 1]) rows.push({ lock: OPEN_WEEK + 1 });
+  if (typeof BOSSES !== 'undefined'){
+    const bst = batState().boss || {}; let nextShown = false;
+    BOSSES.forEach(B => {
+      const row = { boss: B, open: bossOpen(B), rec: bst[B.id] || null };
+      if (row.open){ let at = rows.length; rows.forEach((r, i) => { if (r.x && r.x.w <= B.after) at = i + 1; }); rows.splice(at, 0, row); }
+      else if (!nextShown){ nextShown = true; rows.push(row); }
+    });
+  }
+  rows.push({ exam: true });
+  const node = (img, alt, go = '') => `<span class="node"><img src="img/ui/${img}.webp" alt="${alt}" onerror="this.replaceWith(document.createTextNode(this.alt))">${go}</span>`;
+  return `<h2 class="sech">🗺️ Season map</h2><section class="map" id="map"><svg class="mpath" id="mpath" aria-hidden="true"></svg>
+    ${rows.map((r, i) => {
+      const X = MAP_XS[i % MAP_XS.length];
+      if (r.exam) return `<div class="mrow"><div class="st lock exam" style="left:${X}%">${node('node-4', '🎓')}<span class="slab"><b>FINAL BOSS</b><span>B1 Preliminary exam 🎓</span></span></div></div>`;
+      if (r.boss){
+        const B = r.boss, n = BOSSES.indexOf(B) + 1, win = r.rec && r.rec.win, bad = bossPool(B).wrong.length, s = bad === 1 ? '' : 's';
+        const sub = !r.open ? `Opens after week ${B.after}${bad ? ` · ${bad} mistake${s} collected 👀` : ''}`
+          : win ? '✔ Defeated' : r.rec ? 'Try again! ⚔️' : bad ? `${bad} mistake${s} want revenge ⚔️` : 'Ready to fight ⚔️';
+        const sst = r.rec ? `<span class="sst">Best ${r.rec.best}/${r.rec.total || BOSS_N}</span>` : r.open ? `<span class="sst new">First win +${BOSS_XP} XP</span>` : '';
+        const inner = `${node(B.img, '👹', r.open && !win ? '<em class="go">⚔️ FIGHT</em>' : '')}<span class="slab"><b>BOSS ${n} · ${esc(B.name)}</b><span>${sub}</span>${sst}</span>`;
+        return r.open ? `<div class="mrow"><a class="st boss${win ? ' done' : ' cur'}" style="left:${X}%" href="#" data-boss="${B.id}">${inner}</a></div>`
+          : `<div class="mrow"><div class="st boss lock" style="left:${X}%">${inner}</div></div>`;
+      }
+      if (r.lock) return `<div class="mrow"><div class="st lock" style="left:${X}%">${node('node-3', '🔒')}<span class="slab"><b>STAGE ${two(r.lock)}</b><span>Unlocks next week</span></span></div></div>`;
+      const { w, L, s, vocab } = r.x, res = s.r2 || s.r1, isCur = cur === r.x;
+      const tag = s.phase === 'done' ? `<span class="sst">${starRow(starsOf(s))}${res ? ' ' + res.score + '/' + res.total : ''} · +${missionXP(s).total} XP</span>`
+        : s.phase === 'retry' || s.phase === 'review' ? '<span class="sst warn">✏️ Fix your mistakes</span>'
+        : s.startedAt ? '<span class="sst">⏳ In progress</span>' : '<span class="sst new">🆕 New</span>';
+      const go = !isCur ? '' : s.phase === 'retry' || s.phase === 'review' ? 'FIX ✏️' : s.startedAt ? 'CONTINUE ▶' : 'PLAY ▶';
+      return `<div class="mrow"><a class="st${vocab ? ' vocab' : ''}${s.phase === 'done' ? ' done' : ''}${isCur ? ' cur' : ''}" style="left:${X}%" href="?w=${w}${vocab ? '&m=vocab' : ''}">
+        ${here === r.x ? `<span class="me">${avHtml(me.av, 'av')}</span>` : ''}
+        ${node(vocab ? 'node-2' : 'node-1', vocab ? '📒' : '⚡', go ? `<em class="go">${go}</em>` : '')}
+        <span class="slab"><b>STAGE ${two(w)} · ${vocab ? 'VOCAB' : 'GRAMMAR'}</b><span>${esc(L.title)}</span><small class="scode">${esc(L.code)}${w === OPEN_WEEK ? ' · <i>THIS WEEK</i>' : ''}</small>${tag}</span></a></div>`;
+    }).join('')}</section>`;
+}
+// vẽ đường nối các chặng (sau khi Lobby đã hiện); đoạn đã đi qua sáng màu
+function drawMap(){
+  const m = $('#map'), svg = $('#mpath'); if (!m || !svg) return;
+  const mr = m.getBoundingClientRect();
+  const pts = $$('#map .node').map(n => { const r = n.getBoundingClientRect(); return [r.left - mr.left + r.width / 2, r.top - mr.top + r.height / 2]; });
+  svg.setAttribute('width', mr.width); svg.setAttribute('height', mr.height); svg.setAttribute('viewBox', `0 0 ${mr.width} ${mr.height}`);
+  const path = ps => ps.map((p, i) => { if (!i) return `M${p[0]},${p[1]}`; const q = ps[i - 1], my = (q[1] + p[1]) / 2; return ` C${q[0]},${my} ${p[0]},${my} ${p[0]},${p[1]}`; }).join('');
+  const all = $$('#map .st'), firstOpen = all.findIndex(x => !x.classList.contains('done'));
+  const doneN = firstOpen < 0 ? all.length - 1 : firstOpen; // đường sáng chạy tới chặng đang làm
+  svg.innerHTML = `<path d="${path(pts)}" class="pth"/>${doneN ? `<path d="${path(pts.slice(0, doneN + 1))}" class="pth done"/>` : ''}`;
+}
+window.addEventListener('resize', () => { if (document.body.classList.contains('home')) drawMap(); });
 
 /* ---------- Word Rush: 10 từ / 60 giây ---------- */
 function rushCard(d){

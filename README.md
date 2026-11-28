@@ -8,7 +8,7 @@ Link cho học sinh: https://yumienglish.github.io/PET/
 - `index.html`: trang chủ (danh sách bài) và trang bài làm (`?w=1`, `?w=2`…)
 - `lessons.js`: **dữ liệu bài học**, gồm `OPEN_WEEK`, `VOCAB` (từ mới: nghĩa, phiên âm), `LESSONS` (đề, đáp án, gợi ý, ô Grammar)
 - `app.js`: giao diện, chấm điểm, làm lại câu sai, gửi bài
-- `arena.js`: lớp game kiểu rank / esports (học sinh ~16 tuổi): XP + Rank (Bronze → Legend, bậc III/II/I), sảnh chính, 8 thành tựu, Word Rush (10 từ / 60 giây), avatar (emoji / ảnh máy), âm thanh + pháo hoa, câu chọc / khen của cô (`TEASE`)
+- `arena.js`: lớp game kiểu rank / esports (học sinh ~16 tuổi): XP + Rank (Bronze → Legend, bậc III/II/I), sảnh chính có **bản đồ season** giống B2 First (mỗi mission 1 chặng zig-zag, cũ ở trên → mới ở dưới, chặng đang làm sáng lên + avatar; Boss chen sau tuần 4/8/…; đích = B1 Preliminary exam; hình nút `img/ui/node-1..4.webp` chép từ B2), 8 thành tựu, Word Rush (10 từ / 60 giây), avatar (emoji / ảnh máy), âm thanh + pháo hoa, câu chọc / khen của cô (`TEASE`)
 - `img/`: hình cắt từ sách · `audio/`: audio đã cắt sẵn (bỏ phần giới thiệu, chỉ giữ từ câu hỏi đầu tiên)
 
 ## Cách viết câu hỏi trong `lessons.js`
